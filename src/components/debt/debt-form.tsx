@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDebtStore } from '@/store/debt-store';
+import { parseFormattedNumber, handleNumberInputChange } from '@/lib/utils';
 import { CreditCard, X } from 'lucide-react';
 
 const debtSchema = z.object({
@@ -34,11 +35,16 @@ interface DebtFormProps {
 export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
   const { addDebt } = useDebtStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Formatted display values for money inputs
+  const [formattedTotalAmount, setFormattedTotalAmount] = useState('');
+  const [formattedMonthlyPayment, setFormattedMonthlyPayment] = useState('');
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
     reset,
   } = useForm<DebtFormData>({
     resolver: zodResolver(debtSchema),
@@ -55,6 +61,8 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
       });
 
       reset();
+      setFormattedTotalAmount('');
+      setFormattedMonthlyPayment('');
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -73,36 +81,36 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md max-h-[90vh] bg-white shadow-2xl overflow-hidden">
-        <CardHeader className="border-b border-gray-200">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-3 sm:p-4 pt-4 sm:pt-4">
+      <Card className="w-full max-w-md sm:max-w-lg max-h-[95vh] sm:max-h-[90vh] bg-white shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-300">
+        <CardHeader className="border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <CreditCard className="h-5 w-5 text-red-500" />
+            <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+              <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
               <span>Add New Debt</span>
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0 rounded-full"
+              className="h-8 w-8 p-0 rounded-full hover:bg-gray-100"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
         
-        <CardContent className="overflow-y-auto max-h-[calc(90vh-120px)]">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-4">
+        <CardContent className="overflow-y-auto max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-120px)] px-4 sm:px-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5 py-4 sm:py-6">
             {/* Debt Name */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Debt Name *
               </label>
               <Input
                 {...register('name')}
                 placeholder="e.g., Credit Card Debt"
-                className={`h-12 text-base ${errors.name ? 'border-red-500' : ''}`}
+                className={`h-11 sm:h-12 text-sm sm:text-base ${errors.name ? 'border-red-500' : ''}`}
               />
               {errors.name && (
                 <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
@@ -110,13 +118,13 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
             </div>
 
             {/* Category */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Category *
               </label>
               <select
                 {...register('category')}
-                className="w-full h-12 px-3 py-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-11 sm:h-12 px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">Select category</option>
                 {categoryOptions.map((option) => (
@@ -131,16 +139,20 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
             </div>
 
             {/* Total Amount */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Total Amount (VND) *
               </label>
               <Input
-                {...register('totalAmount', { valueAsNumber: true })}
-                type="number"
+                type="text"
+                value={formattedTotalAmount}
+                onChange={(e) => {
+                  handleNumberInputChange(e.target.value, setFormattedTotalAmount);
+                  setValue('totalAmount', parseFormattedNumber(e.target.value));
+                }}
                 inputMode="numeric"
-                placeholder="15000000"
-                className={`h-12 text-base ${errors.totalAmount ? 'border-red-500' : ''}`}
+                placeholder="15,000,000"
+                className={`h-11 sm:h-12 text-sm sm:text-base ${errors.totalAmount ? 'border-red-500' : ''}`}
               />
               {errors.totalAmount && (
                 <p className="text-red-500 text-xs mt-1">{errors.totalAmount.message}</p>
@@ -148,59 +160,66 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
             </div>
 
             {/* Monthly Payment */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Monthly Payment (VND) * <span className="text-xs text-gray-500">(includes interest)</span>
               </label>
               <Input
-                {...register('monthlyPayment', { valueAsNumber: true })}
-                type="number"
+                type="text"
+                value={formattedMonthlyPayment}
+                onChange={(e) => {
+                  handleNumberInputChange(e.target.value, setFormattedMonthlyPayment);
+                  setValue('monthlyPayment', parseFormattedNumber(e.target.value));
+                }}
                 inputMode="numeric"
-                placeholder="1500000"
-                className={`h-12 text-base ${errors.monthlyPayment ? 'border-red-500' : ''}`}
+                placeholder="1,500,000"
+                className={`h-11 sm:h-12 text-sm sm:text-base ${errors.monthlyPayment ? 'border-red-500' : ''}`}
               />
               {errors.monthlyPayment && (
                 <p className="text-red-500 text-xs mt-1">{errors.monthlyPayment.message}</p>
               )}
             </div>
 
-            {/* Total Months */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                Total Months *
-              </label>
-              <Input
-                {...register('totalMonths', { valueAsNumber: true })}
-                type="number"
-                inputMode="numeric"
-                placeholder="24"
-                className={`h-12 text-base ${errors.totalMonths ? 'border-red-500' : ''}`}
-              />
-              {errors.totalMonths && (
-                <p className="text-red-500 text-xs mt-1">{errors.totalMonths.message}</p>
-              )}
-            </div>
+            {/* Total Months and Remaining Months in grid for better space usage */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Total Months */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 block">
+                  Total Months *
+                </label>
+                <Input
+                  {...register('totalMonths', { valueAsNumber: true })}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="24"
+                  className={`h-11 sm:h-12 text-sm sm:text-base ${errors.totalMonths ? 'border-red-500' : ''}`}
+                />
+                {errors.totalMonths && (
+                  <p className="text-red-500 text-xs mt-1">{errors.totalMonths.message}</p>
+                )}
+              </div>
 
-            {/* Remaining Months */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
-                Remaining Months *
-              </label>
-              <Input
-                {...register('remainingMonths', { valueAsNumber: true })}
-                type="number"
-                inputMode="numeric"
-                placeholder="12"
-                className={`h-12 text-base ${errors.remainingMonths ? 'border-red-500' : ''}`}
-              />
-              {errors.remainingMonths && (
-                <p className="text-red-500 text-xs mt-1">{errors.remainingMonths.message}</p>
-              )}
+              {/* Remaining Months */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 block">
+                  Remaining Months *
+                </label>
+                <Input
+                  {...register('remainingMonths', { valueAsNumber: true })}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="12"
+                  className={`h-11 sm:h-12 text-sm sm:text-base ${errors.remainingMonths ? 'border-red-500' : ''}`}
+                />
+                {errors.remainingMonths && (
+                  <p className="text-red-500 text-xs mt-1">{errors.remainingMonths.message}</p>
+                )}
+              </div>
             </div>
 
             {/* Interest Rate */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Annual Interest Rate (%) *
               </label>
               <Input
@@ -209,7 +228,7 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
                 inputMode="decimal"
                 step="0.1"
                 placeholder="18.5"
-                className={`h-12 text-base ${errors.interestRate ? 'border-red-500' : ''}`}
+                className={`h-11 sm:h-12 text-sm sm:text-base ${errors.interestRate ? 'border-red-500' : ''}`}
               />
               {errors.interestRate && (
                 <p className="text-red-500 text-xs mt-1">{errors.interestRate.message}</p>
@@ -217,24 +236,24 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
             </div>
 
             {/* Description */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-1 block">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">
                 Description (Optional)
               </label>
               <textarea
                 {...register('description')}
                 placeholder="Additional notes about this debt..."
-                className="w-full px-3 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-20 resize-none"
+                className="w-full px-3 py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-16 sm:h-20 resize-none"
               />
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
+            <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 pt-4 sticky bottom-0 bg-white pb-2 sm:pb-0">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="flex-1 h-12 text-base touch-manipulation"
+                className="flex-1 h-11 sm:h-12 text-sm sm:text-base touch-manipulation font-medium"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -242,7 +261,7 @@ export default function DebtForm({ onClose, onSuccess }: DebtFormProps) {
               <Button
                 type="submit"
                 variant="gradient"
-                className="flex-1 h-12 text-base touch-manipulation"
+                className="flex-1 h-11 sm:h-12 text-sm sm:text-base touch-manipulation font-medium"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Adding...' : 'Add Debt'}

@@ -259,33 +259,6 @@ export default function Sidebar({ children }: SidebarProps) {
 
       {/* Main content with modern layout */}
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
-        {/* Enhanced Top bar */}
-        <header className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2.5 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 transition-all duration-200 active:scale-95 shadow-sm"
-              >
-                <Menu className="h-5 w-5 text-gray-700" />
-              </button>
-              <div className="hidden sm:block">
-                <div className="text-sm text-gray-600 bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-2 rounded-full backdrop-blur-sm border border-gray-200/30">
-                  Welcome back, Anh Duc ✨
-                </div>
-              </div>
-            </div>
-            
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-xl bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-200"
-            >
-              <Menu className="h-5 w-5 text-gray-700" />
-            </button>
-          </div>
-        </header>
-
         {/* Page content with mobile spacing */}
         <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
