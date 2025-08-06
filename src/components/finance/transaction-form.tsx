@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { transactionSchema, TransactionFormData } from '@/lib/validations';
 import { useFinanceStore } from '@/store/finance-store';
 import { categories, categoryConfig } from '@/lib/mock-data';
+import { formatNumberWithCommas, parseFormattedNumber, handleNumberInputChange } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import { Plus, DollarSign, Calendar, Tag, FileText, X } from 'lucide-react';
 
 export default function TransactionForm() {
   const [isOpen, setIsOpen] = useState(false);
+  const [formattedAmount, setFormattedAmount] = useState('');
   const { addTransaction } = useFinanceStore();
   
   const {
@@ -39,6 +41,7 @@ export default function TransactionForm() {
       userId: '1', // Mock user ID
     });
     reset();
+    setFormattedAmount('');
     setIsOpen(false);
   };
 
@@ -141,10 +144,13 @@ export default function TransactionForm() {
                 <span>Amount</span>
               </label>
               <Input
-                type="number"
-                step="0.01"
-                {...register('amount', { valueAsNumber: true })}
-                placeholder="0.00"
+                type="text"
+                value={formattedAmount}
+                onChange={(e) => {
+                  handleNumberInputChange(e.target.value, setFormattedAmount);
+                  setValue('amount', parseFormattedNumber(e.target.value));
+                }}
+                placeholder="0"
                 variant="glass"
                 className="text-lg font-semibold"
               />

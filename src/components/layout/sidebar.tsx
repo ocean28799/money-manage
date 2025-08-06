@@ -15,8 +15,6 @@ import {
   PiggyBank,
   ChevronRight,
   User,
-  Bell,
-  Search,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -154,19 +152,6 @@ export default function Sidebar({ children }: SidebarProps) {
           </button>
         </div>
 
-        {/* Quick Actions Section */}
-        <div className="p-4 border-b border-gray-200/30">
-          <div className="flex items-center space-x-2">
-            <button className="flex-1 flex items-center space-x-2 p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-200">
-              <Search className="h-4 w-4 text-blue-600" />
-              <span className="text-sm text-blue-700 font-medium">Quick Search</span>
-            </button>
-            <button className="p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all duration-200">
-              <Bell className="h-4 w-4 text-purple-600" />
-            </button>
-          </div>
-        </div>
-        
         {/* Enhanced Navigation */}
         <nav className="flex-1 py-4 overflow-y-auto">
           <div className="px-4 space-y-1">
@@ -291,16 +276,13 @@ export default function Sidebar({ children }: SidebarProps) {
               </div>
             </div>
             
-            {/* Quick actions for desktop */}
-            <div className="hidden sm:flex items-center space-x-3">
-              <button className="p-2 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200 shadow-sm">
-                <Search className="h-4 w-4 text-gray-600" />
-              </button>
-              <button className="p-2 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-200 shadow-sm relative">
-                <Bell className="h-4 w-4 text-gray-600" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white"></div>
-              </button>
-            </div>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <Menu className="h-5 w-5 text-gray-700" />
+            </button>
           </div>
         </header>
 

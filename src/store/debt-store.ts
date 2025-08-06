@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Debt, DebtPayment, DebtSummary } from '@/types';
 
 interface DebtStore {
@@ -22,9 +23,11 @@ interface DebtStore {
   getUpcomingPayments: () => DebtPayment[];
 }
 
-export const useDebtStore = create<DebtStore>((set, get) => ({
-  debts: [],
-  payments: [],
+export const useDebtStore = create<DebtStore>()(
+  persist(
+    (set, get) => ({
+      debts: [], // Start with empty debts array
+      payments: [],
 
   addDebt: (debt) => {
     const remainingAmount = get().calculateRemainingAmount(debt.monthlyPayment, debt.remainingMonths);
@@ -166,4 +169,12 @@ export const useDebtStore = create<DebtStore>((set, get) => ({
       remainingBalance: debt.remainingAmount,
     }));
   },
-}));
+}),
+{
+  name: 'debt-store',
+  partialize: (state) => ({
+    debts: state.debts,
+    payments: state.payments,
+  }),
+}
+));

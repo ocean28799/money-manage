@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Transaction, FinanceSummary } from '@/types';
 
 interface TransactionTemplate {
@@ -81,9 +82,11 @@ const defaultTemplates: TransactionTemplate[] = [
   },
 ];
 
-export const useFinanceStore = create<FinanceStore>((set, get) => ({
-  transactions: [], // Start with empty transactions array
-  templates: defaultTemplates,
+export const useFinanceStore = create<FinanceStore>()(
+  persist(
+    (set, get) => ({
+      transactions: [], // Start with empty transactions array
+      templates: defaultTemplates,
   
   addTransaction: (transaction) =>
     set((state) => ({
@@ -224,4 +227,13 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
       ...data,
     }));
   },
-}));
+}),
+{
+  name: 'finance-store',
+  // Persist all store data
+  partialize: (state) => ({
+    transactions: state.transactions,
+    templates: state.templates,
+  }),
+}
+));

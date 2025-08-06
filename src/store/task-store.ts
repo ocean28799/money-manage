@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Task } from '@/types';
 
 interface TaskStore {
@@ -12,8 +13,10 @@ interface TaskStore {
   getTaskStats: () => { completed: number; pending: number; overdue: number };
 }
 
-export const useTaskStore = create<TaskStore>((set, get) => ({
-  tasks: [], // Start with empty tasks array
+export const useTaskStore = create<TaskStore>()(
+  persist(
+    (set, get) => ({
+      tasks: [], // Start with empty tasks array
   
   addTask: (task) =>
     set((state) => ({
@@ -81,4 +84,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     
     return { completed, pending, overdue };
   },
-}));
+}),
+{
+  name: 'task-store',
+  partialize: (state) => ({ tasks: state.tasks }),
+}
+));

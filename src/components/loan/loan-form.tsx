@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useLoanStore } from '@/store/loan-store';
+import { formatNumberWithCommas, parseFormattedNumber, handleNumberInputChange } from '@/lib/utils';
 import { Loan } from '@/types';
 
 interface LoanFormProps {
@@ -29,6 +30,17 @@ export function LoanForm({ onClose, editingLoan }: LoanFormProps) {
       ? new Date(editingLoan.targetPayoffDate).toISOString().split('T')[0]
       : '',
   });
+
+  // Formatted display values for number inputs
+  const [formattedTotalAmount, setFormattedTotalAmount] = useState(
+    editingLoan?.totalAmount ? formatNumberWithCommas(editingLoan.totalAmount) : ''
+  );
+  const [formattedAmountPaid, setFormattedAmountPaid] = useState(
+    editingLoan?.amountPaid ? formatNumberWithCommas(editingLoan.amountPaid) : ''
+  );
+  const [formattedMonthlyPayment, setFormattedMonthlyPayment] = useState(
+    editingLoan?.monthlyPayment ? formatNumberWithCommas(editingLoan.monthlyPayment) : ''
+  );
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -75,6 +87,7 @@ export function LoanForm({ onClose, editingLoan }: LoanFormProps) {
       title: formData.title.trim(),
       totalAmount: Number(formData.totalAmount),
       amountPaid: Number(formData.amountPaid),
+      remainingAmount: Number(formData.totalAmount) - Number(formData.amountPaid),
       monthlyPayment: formData.monthlyPayment ? Number(formData.monthlyPayment) : undefined,
       interestRate: formData.interestRate ? Number(formData.interestRate) : undefined,
       category: formData.category as 'personal' | 'auto' | 'home' | 'student' | 'business' | 'other',
@@ -147,9 +160,12 @@ export function LoanForm({ onClose, editingLoan }: LoanFormProps) {
             </label>
             <Input
               id="totalAmount"
-              type="number"
-              value={formData.totalAmount}
-              onChange={(e) => handleInputChange('totalAmount', e.target.value)}
+              type="text"
+              value={formattedTotalAmount}
+              onChange={(e) => {
+                handleNumberInputChange(e.target.value, setFormattedTotalAmount);
+                handleInputChange('totalAmount', parseFormattedNumber(e.target.value));
+              }}
               placeholder="0.00"
               min="0"
               step="0.01"
@@ -164,9 +180,12 @@ export function LoanForm({ onClose, editingLoan }: LoanFormProps) {
             </label>
             <Input
               id="amountPaid"
-              type="number"
-              value={formData.amountPaid}
-              onChange={(e) => handleInputChange('amountPaid', Number(e.target.value))}
+              type="text"
+              value={formattedAmountPaid}
+              onChange={(e) => {
+                handleNumberInputChange(e.target.value, setFormattedAmountPaid);
+                handleInputChange('amountPaid', parseFormattedNumber(e.target.value));
+              }}
               placeholder="0.00"
               min="0"
               step="0.01"
@@ -183,10 +202,13 @@ export function LoanForm({ onClose, editingLoan }: LoanFormProps) {
             </label>
             <Input
               id="monthlyPayment"
-              type="number"
-              value={formData.monthlyPayment}
-              onChange={(e) => handleInputChange('monthlyPayment', e.target.value)}
-              placeholder="0.00"
+              type="text"
+              value={formattedMonthlyPayment}
+              onChange={(e) => {
+                handleNumberInputChange(e.target.value, setFormattedMonthlyPayment);
+                handleInputChange('monthlyPayment', parseFormattedNumber(e.target.value));
+              }}
+              placeholder="0"
               min="0"
               step="0.01"
               className={errors.monthlyPayment ? 'border-red-500' : ''}

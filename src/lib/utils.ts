@@ -25,3 +25,37 @@ export function formatVNDShort(amount: number): string {
     return `${amount} VND`;
   }
 }
+
+// Format number with commas for display in input fields
+export function formatNumberWithCommas(value: string | number): string {
+  const num = typeof value === 'string' ? value.replace(/,/g, '') : value.toString();
+  const parsed = parseFloat(num);
+  if (isNaN(parsed)) return '';
+  return parsed.toLocaleString('en-US');
+}
+
+// Parse formatted number back to actual number
+export function parseFormattedNumber(value: string): number {
+  const cleaned = value.replace(/,/g, '');
+  const parsed = parseFloat(cleaned);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+// Handle input change for formatted number inputs
+export function handleNumberInputChange(
+  value: string,
+  onChange: (value: string) => void
+) {
+  // Remove all non-digit characters except decimal point
+  const cleaned = value.replace(/[^\d.]/g, '');
+  
+  // Ensure only one decimal point
+  const parts = cleaned.split('.');
+  const formatted = parts.length > 2 
+    ? parts[0] + '.' + parts.slice(1).join('')
+    : cleaned;
+  
+  // Format with commas for display
+  const withCommas = formatNumberWithCommas(formatted);
+  onChange(withCommas);
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,18 +10,11 @@ import { LoanForm } from './loan-form';
 import { Loan } from '@/types';
 
 export function LoanList() {
-  const { loans, deleteLoan, makePayment, getLoanPayments, initializeMockData } = useLoanStore();
+  const { loans, deleteLoan, makePayment, getLoanPayments } = useLoanStore();
   const [showForm, setShowForm] = useState(false);
   const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
   const [paymentAmounts, setPaymentAmounts] = useState<Record<string, string>>({});
   const [showPayments, setShowPayments] = useState<Record<string, boolean>>({});
-
-  // Initialize mock data on component mount
-  useEffect(() => {
-    if (loans.length === 0) {
-      initializeMockData();
-    }
-  }, [loans.length, initializeMockData]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
