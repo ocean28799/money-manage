@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { Transaction, FinanceSummary } from '@/types';
-import { mockTransactions } from '@/lib/mock-data';
 
 interface TransactionTemplate {
   id: string;
@@ -83,7 +82,7 @@ const defaultTemplates: TransactionTemplate[] = [
 ];
 
 export const useFinanceStore = create<FinanceStore>((set, get) => ({
-  transactions: mockTransactions,
+  transactions: [], // Start with empty transactions array
   templates: defaultTemplates,
   
   addTransaction: (transaction) =>

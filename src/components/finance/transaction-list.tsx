@@ -134,7 +134,7 @@ export default function TransactionList() {
             </div>
           ) : (
             filteredTransactions.map((transaction, index) => {
-              const config = categoryConfig[transaction.category as keyof typeof categoryConfig];
+              const config = categoryConfig[transaction.type]?.[transaction.category as keyof typeof categoryConfig[typeof transaction.type]];
               return (
                 <div
                   key={transaction.id}

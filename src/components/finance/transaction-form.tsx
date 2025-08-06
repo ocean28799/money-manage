@@ -184,7 +184,7 @@ export default function TransactionForm() {
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {categories[transactionType].map((category) => {
-                const config = categoryConfig[category as keyof typeof categoryConfig];
+                const config = categoryConfig[transactionType]?.[category as keyof typeof categoryConfig[typeof transactionType]];
                 const isSelected = selectedCategory === category;
                 return (
                   <button
@@ -198,8 +198,8 @@ export default function TransactionForm() {
                     }`}
                   >
                     <div className="text-center">
-                      <div className="text-xl mb-1">{config?.icon}</div>
-                      <div className="text-xs font-medium">{category}</div>
+                      <div className="text-xl mb-1">{config?.icon || '💰'}</div>
+                      <div className="text-xs font-medium">{config?.label || category}</div>
                     </div>
                   </button>
                 );

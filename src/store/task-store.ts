@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { Task } from '@/types';
-import { mockTasks } from '@/lib/mock-data';
 
 interface TaskStore {
   tasks: Task[];
@@ -14,7 +13,7 @@ interface TaskStore {
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
-  tasks: mockTasks,
+  tasks: [], // Start with empty tasks array
   
   addTask: (task) =>
     set((state) => ({

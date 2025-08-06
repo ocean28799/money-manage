@@ -95,7 +95,7 @@ export default function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8 stats-grid">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -108,26 +108,26 @@ export default function StatsCards() {
             {/* Animated background gradient */}
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-500`} />
             
-            {/* Floating orb decoration */}
-            <div className={`absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br ${stat.iconBg} rounded-full opacity-10 group-hover:scale-125 transition-transform duration-700`} />
+            {/* Floating orb decoration - hidden on mobile */}
+            <div className={`absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br ${stat.iconBg} rounded-full opacity-10 group-hover:scale-125 transition-transform duration-700 hidden sm:block`} />
             
-            <CardHeader className="flex flex-row items-center justify-between pb-3 relative z-10">
-              <CardTitle className="text-sm font-semibold text-gray-600 group-hover:text-gray-800 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 sm:pb-3 relative z-10">
+              <CardTitle className="text-xs sm:text-sm font-semibold text-gray-600 group-hover:text-gray-800 transition-colors">
                 {stat.title}
               </CardTitle>
-              <div className={`p-3 rounded-2xl bg-gradient-to-br ${stat.iconBg} shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}>
-                <Icon className="h-5 w-5 text-white" />
+              <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-br ${stat.iconBg} shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500`}>
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
             </CardHeader>
             
-            <CardContent className="relative z-10">
-              <div className="space-y-3">
-                <div className={`text-3xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+            <CardContent className="relative z-10 pt-0">
+              <div className="space-y-2 sm:space-y-3">
+                <div className={`text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                   {stat.value}
                 </div>
                 
-                {/* Change indicator */}
-                <div className="flex items-center space-x-2">
+                {/* Change indicator - simplified on mobile */}
+                <div className="flex items-center space-x-1 sm:space-x-2">
                   <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
                     stat.changeType === 'positive' 
                       ? 'bg-green-100 text-green-700' 
@@ -136,9 +136,9 @@ export default function StatsCards() {
                     <TrendingUp className={`h-3 w-3 ${
                       stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600 rotate-180'
                     }`} />
-                    <span>{stat.change}</span>
+                    <span className="hidden sm:inline">{stat.change}</span>
                   </div>
-                  <span className="text-xs text-gray-500">vs last month</span>
+                  <span className="text-xs text-gray-500 hidden sm:inline">vs last month</span>
                 </div>
               </div>
             </CardContent>

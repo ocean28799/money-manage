@@ -27,7 +27,6 @@ const navigation = [
   { name: 'Loan Management', href: '/loan', icon: PiggyBank, shortName: 'Loans' },
   { name: 'Daily Tasks', href: '/tasks/daily', icon: CheckSquare, shortName: 'Tasks' },
   { name: 'Monthly Goals', href: '/tasks/monthly', icon: Calendar, shortName: 'Goals' },
-  { name: 'Settings', href: '/settings', icon: Settings, shortName: 'Settings' },
 ];
 
 interface SidebarProps {
@@ -73,26 +72,26 @@ export default function Sidebar({ children }: SidebarProps) {
 
       {/* Enhanced Mobile Bottom Navigation Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl">
-        <div className="flex items-center justify-around px-2 py-2 safe-area-pb">
-          {navigation.slice(0, 5).map((item) => {
+        <div className="flex items-center justify-around px-1 py-2 pb-safe">
+          {navigation.slice(0, 4).map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[60px]',
+                  'flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[52px] max-w-[72px] flex-1',
                   isActive
                     ? 'bg-gradient-to-t from-blue-500 to-purple-600 text-white shadow-lg scale-105'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
                 )}
               >
                 <item.icon className={cn(
-                  'h-5 w-5 mb-1 transition-transform',
+                  'h-4 w-4 mb-1 transition-transform',
                   isActive ? 'text-white scale-110' : 'text-gray-500'
                 )} />
                 <span className={cn(
-                  'text-xs font-medium leading-none',
+                  'text-xs font-medium leading-none text-center',
                   isActive ? 'text-white' : 'text-gray-600'
                 )}>
                   {item.shortName}
@@ -100,13 +99,32 @@ export default function Sidebar({ children }: SidebarProps) {
               </Link>
             );
           })}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[60px] text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95"
-          >
-            <Menu className="h-5 w-5 mb-1 text-gray-500" />
-            <span className="text-xs font-medium leading-none text-gray-600">More</span>
-          </button>
+          {navigation.slice(4, 6).map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[52px] max-w-[72px] flex-1',
+                  isActive
+                    ? 'bg-gradient-to-t from-blue-500 to-purple-600 text-white shadow-lg scale-105'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
+                )}
+              >
+                <item.icon className={cn(
+                  'h-4 w-4 mb-1 transition-transform',
+                  isActive ? 'text-white scale-110' : 'text-gray-500'
+                )} />
+                <span className={cn(
+                  'text-xs font-medium leading-none text-center',
+                  isActive ? 'text-white' : 'text-gray-600'
+                )}>
+                  {item.shortName}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
@@ -198,7 +216,41 @@ export default function Sidebar({ children }: SidebarProps) {
         </nav>
 
         {/* Enhanced User Profile Section */}
-        <div className="p-4 border-t border-gray-200/30">
+        <div className="p-4 border-t border-gray-200/30 space-y-4">
+          {/* Settings Button */}
+          <Link
+            href="/settings"
+            className={cn(
+              'group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 transform',
+              'hover:scale-[1.02] active:scale-[0.98]',
+              pathname === '/settings'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-xl shadow-blue-500/25'
+                : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:shadow-md'
+            )}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <div className="flex items-center">
+              <div className={cn(
+                'p-2 rounded-lg mr-3 transition-all duration-300',
+                pathname === '/settings'
+                  ? 'bg-white/20 shadow-lg' 
+                  : 'bg-gray-100 group-hover:bg-white group-hover:shadow-md'
+              )}>
+                <Settings
+                  className={cn(
+                    'h-5 w-5 transition-all duration-300',
+                    pathname === '/settings' ? 'text-white' : 'text-gray-600 group-hover:text-gray-800'
+                  )}
+                />
+              </div>
+              <span className="font-medium">Settings</span>
+            </div>
+            {pathname === '/settings' && (
+              <ChevronRight className="h-4 w-4 text-white/80" />
+            )}
+          </Link>
+          
+          {/* User Profile */}
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-4 border border-gray-200/30 shadow-lg">
             <div className="flex items-center space-x-3">
               <div className="relative">

@@ -26,7 +26,7 @@
   border: 1px solid var(--glassmorphism-border);
 }
 
-/* Mobile optimization for iPhone 12 Pro */
+/* Mobile optimization for iPhone 12 Pro and similar devices */
 @media (max-width: 768px) {
   /* Improve touch targets */
   button, input, select, textarea {
@@ -36,6 +36,14 @@
   /* Better spacing for mobile */
   .space-y-4 > * + * {
     margin-top: 1rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .space-y-8 > * + * {
+    margin-top: 1.5rem;
   }
   
   /* Improved form inputs for mobile */
@@ -52,9 +60,29 @@
   .overflow-y-auto {
     -webkit-overflow-scrolling: touch;
   }
+  
+  /* Reduce padding on mobile */
+  .p-8 {
+    padding: 1.5rem;
+  }
+  
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  /* Better grid layouts */
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
 }
 
-/* iPhone 12 Pro specific optimizations */
+/* iPhone 12 Pro specific optimizations (390px x 844px) */
 @media (max-width: 428px) {
   /* Container padding */
   .container {
@@ -68,20 +96,76 @@
     font-size: 0.875rem;
   }
   
-  /* Typography scaling */
+  /* Typography scaling for better readability */
   h1 {
+    font-size: 1.75rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  /* Better spacing for small screens */
+  .space-y-8 > * + * {
+    margin-top: 1rem;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Hero sections adjustments */
+  .hero-mobile {
+    padding: 1rem;
+  }
+  
+  .hero-mobile h1 {
     font-size: 1.5rem;
     line-height: 2rem;
   }
   
-  h2 {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
+  .hero-mobile p {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
   
-  h3 {
-    font-size: 1.125rem;
-    line-height: 1.5rem;
+  /* Grid adjustments */
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  /* Stats cards */
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  
+  /* Progress bars */
+  .progress-mobile {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Safe area support for iPhone with notch */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
   }
 }
 
