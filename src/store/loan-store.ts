@@ -5,12 +5,19 @@ import { Loan, LoanPayment, LoanSummary } from '@/types';
 interface LoanStore {
   loans: Loan[];
   loanPayments: LoanPayment[];
-  addLoan: (loan: Omit<Loan, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  isLoading: boolean;
+  error: string | null;
+
+  // Actions
+  addLoan: (loan: Omit<Loan, 'id' | 'createdAt' | 'updatedAt' | 'remainingAmount'>) => void;
   updateLoan: (id: string, updates: Partial<Loan>) => void;
   deleteLoan: (id: string) => void;
   makePayment: (loanId: string, amount: number, description?: string) => void;
+  getLoanById: (id: string) => Loan | undefined;
   getLoanSummary: () => LoanSummary;
   getLoanPayments: (loanId: string) => LoanPayment[];
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
 }
 
 export const useLoanStore = create<LoanStore>()(
@@ -18,14 +25,14 @@ export const useLoanStore = create<LoanStore>()(
     (set, get) => ({
       loans: [],
       loanPayments: [],
+      isLoading: false,
+      error: null,
 
       addLoan: (loanData) => {
         const newLoan: Loan = {
           ...loanData,
           id: Date.now().toString(),
-          amountPaid: 0,
-          remainingAmount: loanData.totalAmount,
-          isActive: true,
+          remainingAmount: loanData.totalAmount - loanData.amountPaid,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -35,31 +42,28 @@ export const useLoanStore = create<LoanStore>()(
         }));
       },
 
-      updateLoan: (id, updates) => {
+      updateLoan: (id, updates) =>
         set((state) => ({
           loans: state.loans.map((loan) =>
             loan.id === id
               ? {
                   ...loan,
                   ...updates,
+                  remainingAmount: (updates.totalAmount || loan.totalAmount) - (updates.amountPaid || loan.amountPaid),
                   updatedAt: new Date(),
                 }
               : loan
           ),
-        }));
-      },
+        })),
 
-      deleteLoan: (id) => {
+      deleteLoan: (id) =>
         set((state) => ({
           loans: state.loans.filter((loan) => loan.id !== id),
           loanPayments: state.loanPayments.filter((payment) => payment.loanId !== id),
-        }));
-      },
+        })),
 
-      makePayment: (loanId, amount, description) => {
-        const { loans } = get();
-        const loan = loans.find((l) => l.id === loanId);
-        
+      makePayment: (loanId, amount, description = '') => {
+        const loan = get().getLoanById(loanId);
         if (!loan) return;
 
         const newPayment: LoanPayment = {
@@ -70,19 +74,14 @@ export const useLoanStore = create<LoanStore>()(
           description,
         };
 
-        // Update loan amounts
-        const updatedAmountPaid = loan.amountPaid + amount;
-        const updatedRemainingAmount = loan.totalAmount - updatedAmountPaid;
-
         set((state) => ({
           loanPayments: [...state.loanPayments, newPayment],
           loans: state.loans.map((l) =>
             l.id === loanId
               ? {
                   ...l,
-                  amountPaid: updatedAmountPaid,
-                  remainingAmount: updatedRemainingAmount,
-                  isActive: updatedRemainingAmount > 0,
+                  amountPaid: l.amountPaid + amount,
+                  remainingAmount: l.remainingAmount - amount,
                   updatedAt: new Date(),
                 }
               : l
@@ -90,8 +89,12 @@ export const useLoanStore = create<LoanStore>()(
         }));
       },
 
+      getLoanById: (id) => {
+        return get().loans.find((loan) => loan.id === id);
+      },
+
       getLoanSummary: (): LoanSummary => {
-        const { loans, loanPayments } = get();
+        const loans = get().loans;
         
         const totalLoaned = loans.reduce((sum, loan) => sum + loan.totalAmount, 0);
         const totalPaid = loans.reduce((sum, loan) => sum + loan.amountPaid, 0);
@@ -103,13 +106,18 @@ export const useLoanStore = create<LoanStore>()(
           totalPaid,
           totalRemaining,
           totalMonthlyPayments: monthlyPayments,
-          averagePayoffMonths: 0, // Simplified calculation
+          averagePayoffMonths: 0, // Simplified calculation since Loan interface doesn't have duration field
         };
       },
 
       getLoanPayments: (loanId) => {
-        return get().loanPayments.filter((payment) => payment.loanId === loanId);
+        return get().loanPayments
+          .filter((payment) => payment.loanId === loanId)
+          .sort((a, b) => new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime());
       },
+
+      setLoading: (loading) => set({ isLoading: loading }),
+      setError: (error) => set({ error }),
     }),
     {
       name: 'loan-store',

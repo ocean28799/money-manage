@@ -1,14 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Loan, LoanPayment,        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-        return {
-          totalLoans: totalLoaned,
-          totalPaid,
-          totalRemaining,
-          totalMonthlyPayments: monthlyPayments,
-          averagePayoffMonths: 0, // Simplified calculation since we don't have duration field
-        };om '@/types';
+import { Loan, LoanPayment, LoanSummary } from '@/types';
 
 interface LoanStore {
   loans: Loan[];
@@ -103,32 +95,18 @@ export const useLoanStore = create<LoanStore>()(
 
       getLoanSummary: (): LoanSummary => {
         const loans = get().loans;
-        const payments = get().loanPayments;
-
+        
         const totalLoaned = loans.reduce((sum, loan) => sum + loan.totalAmount, 0);
         const totalPaid = loans.reduce((sum, loan) => sum + loan.amountPaid, 0);
         const totalRemaining = loans.reduce((sum, loan) => sum + loan.remainingAmount, 0);
         const monthlyPayments = loans.reduce((sum, loan) => sum + (loan.monthlyPayment || 0), 0);
-
-        // Calculate this month's payments
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-        const thisMonthPayments = payments.filter(
-          (payment) =>
-            payment.paymentDate >= startOfMonth && payment.paymentDate <= endOfMonth
-        ).length;
 
         return {
           totalLoans: totalLoaned,
           totalPaid,
           totalRemaining,
           totalMonthlyPayments: monthlyPayments,
-          averagePayoffMonths:
-            loans.length > 0
-              ? loans.reduce((sum, loan) => sum + (loan.duration || 0), 0) / loans.length
-              : 0,
+          averagePayoffMonths: 0, // Simplified calculation since Loan interface doesn't have duration field
         };
       },
 

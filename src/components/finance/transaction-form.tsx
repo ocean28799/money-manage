@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { transactionSchema, TransactionFormData } from '@/lib/validations';
 import { useFinanceStore } from '@/store/finance-store';
 import { categories, categoryConfig } from '@/lib/mock-data';
-import { formatNumberWithCommas, parseFormattedNumber, handleNumberInputChange } from '@/lib/utils';
+import { parseFormattedNumber, handleNumberInputChange } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -91,7 +91,7 @@ export const useLoanStore = create<LoanStore>()(
       },
 
       getLoanSummary: (): LoanSummary => {
-        const { loans, loanPayments } = get();
+        const { loans } = get();
         
         const totalLoaned = loans.reduce((sum, loan) => sum + loan.totalAmount, 0);
         const totalPaid = loans.reduce((sum, loan) => sum + loan.amountPaid, 0);
