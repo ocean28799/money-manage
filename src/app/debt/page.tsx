@@ -1,13 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useDebtStore } from '@/store/debt-store';
+import { usePersonalDebtStore } from '@/store/personal-debt-store';
 import { formatVNDShort } from '@/lib/utils';
 import DebtForm from '@/components/debt/debt-form';
+import PersonalDebtForm from '@/components/debt/personal-debt-form';
+import PersonalDebtPaymentForm from '@/components/debt/personal-debt-payment-form';
 import { 
   CreditCard, 
   TrendingDown, 
@@ -16,18 +19,28 @@ import {
   Calculator,
   AlertTriangle,
   CheckCircle,
-  Clock
+  Clock,
+  User,
+  DollarSign,
+  Users
 } from 'lucide-react';
 
 export default function DebtPage() {
-  const { debts, getDebtSummary, calculatePayoffSchedule } = useDebtStore();
-  const [selectedDebtId, setSelectedDebtId] = useState<string | null>(null);
+  const { debts, getDebtSummary } = useDebtStore();
+  const { 
+    personalDebts, 
+    getPersonalDebtSummary
+  } = usePersonalDebtStore();
+  
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showPersonalDebtForm, setShowPersonalDebtForm] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'banking' | 'personal'>('banking');
   
   const debtSummary = getDebtSummary();
+  const personalDebtSummary = getPersonalDebtSummary();
   const activeDebts = debts.filter(debt => debt.isActive);
-  
-  const selectedSchedule = selectedDebtId ? calculatePayoffSchedule(selectedDebtId) : [];
+  const activePersonalDebts = personalDebts.filter(debt => debt.isActive);
   
   const getCategoryIcon = (category: string) => {
     const icons = {
@@ -52,7 +65,7 @@ export default function DebtPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden">
+    <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 via-orange-600/10 to-yellow-600/10 rounded-2xl sm:rounded-3xl" />
@@ -70,321 +83,392 @@ export default function DebtPage() {
                     Debt Management
                   </h1>
                   <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base lg:text-lg">
-                    Track and manage your debts effectively 💳
+                    Track banking and personal debts 💳👥
                   </p>
                 </div>
               </div>
-              
-              <Button
-                onClick={() => setShowAddForm(true)}
-                variant="gradient"
-                size="lg"
-                className="shadow-lg w-full sm:w-auto"
+            </div>
+            
+            {/* Tab Navigation */}
+            <div className="flex bg-white/70 rounded-xl p-1 backdrop-blur-sm border border-gray-200/50">
+              <button
+                onClick={() => setActiveTab('banking')}
+                className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === 'banking'
+                    ? 'bg-white shadow-md text-red-600'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
               >
-                <Plus className="h-5 w-5 mr-2" />
-                Add Debt
-              </Button>
+                🏦 Banking Debt
+              </button>
+              <button
+                onClick={() => setActiveTab('personal')}
+                className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === 'personal'
+                    ? 'bg-white shadow-md text-purple-600'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                👥 Personal Debt
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        <Card variant="glass" className="group">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-              <div className="order-2 sm:order-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">Total Debt</p>
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">
-                  {formatVNDShort(debtSummary.totalDebt)}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center order-1 sm:order-2 self-end sm:self-auto">
-                <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Tab Content */}
+      {activeTab === 'banking' && (
+        <>
+          {/* Add Banking Debt Button */}
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setShowAddForm(true)}
+              variant="gradient"
+              size="lg"
+              className="shadow-lg"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Banking Debt
+            </Button>
+          </div>
 
-        <Card variant="glass" className="group">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-              <div className="order-2 sm:order-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">Monthly Payments</p>
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600">
-                  {formatVNDShort(debtSummary.totalMonthlyPayments)}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg sm:rounded-xl flex items-center justify-center order-1 sm:order-2 self-end sm:self-auto">
-                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="glass" className="group">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-              <div className="order-2 sm:order-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">Interest/Month</p>
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-600">
-                  {formatVNDShort(debtSummary.totalInterestPerMonth)}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg sm:rounded-xl flex items-center justify-center order-1 sm:order-2 self-end sm:self-auto">
-                <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="glass" className="group">
-          <CardContent className="p-3 sm:p-4 lg:p-6">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-              <div className="order-2 sm:order-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600">Avg. Payoff</p>
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
-                  {Math.round(debtSummary.averagePayoffMonths)} months
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center order-1 sm:order-2 self-end sm:self-auto">
-                <Clock className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Debt List */}
-      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <CreditCard className="h-5 w-5 text-red-500" />
-              <span>Active Debts</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4">
-            {activeDebts.map((debt) => {
-              const progressPercentage = debt.totalMonths > 0 
-                ? ((debt.totalMonths - debt.remainingMonths) / debt.totalMonths) * 100 
-                : 0;
-              
-              return (
-                <div
-                  key={debt.id}
-                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all cursor-pointer touch-manipulation ${
-                    selectedDebtId === debt.id
-                      ? 'border-blue-500 bg-blue-50/50'
-                      : 'border-gray-200 hover:border-gray-300 bg-white/50'
-                  }`}
-                  onClick={() => setSelectedDebtId(debt.id)}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className={`w-8 h-8 bg-gradient-to-br ${getCategoryColor(debt.category)} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                        <span className="text-white text-sm">{getCategoryIcon(debt.category)}</span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-gray-900 truncate text-sm sm:text-base">{debt.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">{debt.category.replace('_', ' ')}</p>
-                      </div>
-                    </div>
-                    <Badge variant={debt.interestRate > 15 ? 'error' : 'default'} size="sm">
-                      {debt.interestRate}% APR
-                    </Badge>
+          {/* Banking Debt Summary Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total Debt</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">
+                      {formatVNDShort(debtSummary.totalDebt)}
+                    </p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Remaining Debt</span>
-                      <span className="font-semibold">{formatVNDShort(debt.remainingAmount)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Months</span>
-                      <span className="font-semibold">{debt.remainingMonths} / {debt.totalMonths}</span>
-                    </div>
-                    <Progress value={progressPercentage} className="h-2" />
-                    <div className="flex justify-between text-xs text-gray-500">
-                      <span>{progressPercentage.toFixed(1)}% completed</span>
-                      <span>{debt.remainingMonths} months left</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between mt-3 text-sm">
-                    <span className="text-gray-600">Monthly Payment</span>
-                    <span className="font-semibold text-orange-600">
-                      {formatVNDShort(debt.monthlyPayment)}
-                    </span>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                 </div>
-              );
-            })}
-            
-            {activeDebts.length === 0 && (
-              <div className="text-center py-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                <p className="text-gray-600">No active debts! 🎉</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* Payment Schedule */}
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <Calculator className="h-5 w-5 text-blue-500" />
-              <span className="truncate">
-                {selectedDebtId 
-                  ? `Payment Schedule - ${debts.find(d => d.id === selectedDebtId)?.name}`
-                  : 'Select a debt to view schedule'
-                }
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {selectedSchedule.length > 0 ? (
-              <div className="space-y-3 max-h-80 sm:max-h-96 overflow-y-auto">
-                {selectedSchedule.slice(0, 12).map((payment, index) => (
-                  <div key={index} className="flex justify-between items-start p-3 bg-white/50 rounded-lg">
-                    <div className="min-w-0 flex-1">
-                      <p className="font-medium text-sm sm:text-base">Month {payment.month}</p>
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        Principal: {formatVNDShort(payment.principal)}
-                      </p>
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        Interest: {formatVNDShort(payment.monthlyInterest)}
-                      </p>
-                    </div>
-                    <div className="text-right ml-3 flex-shrink-0">
-                      <p className="font-semibold text-sm sm:text-base">{formatVNDShort(payment.payment)}</p>
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        Balance: {formatVNDShort(payment.balance)}
-                      </p>
-                    </div>
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Monthly Payment</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
+                      {formatVNDShort(debtSummary.totalMonthlyPayments)}
+                    </p>
                   </div>
-                ))}
-                {selectedSchedule.length > 12 && (
-                  <p className="text-center text-sm text-gray-500 py-2">
-                    ... and {selectedSchedule.length - 12} more payments
-                  </p>
-                )}
-              </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Interest/Month</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600">
+                      {formatVNDShort(debtSummary.totalInterestPerMonth)}
+                    </p>
+                  </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Avg. Payoff</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">
+                      {Math.round(debtSummary.averagePayoffMonths)} mo
+                    </p>
+                  </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Banking Debts List */}
+          <div className="grid gap-4 sm:gap-6">
+            {activeDebts.length === 0 ? (
+              <Card variant="glass">
+                <CardContent className="p-6 sm:p-8 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <CreditCard className="h-8 w-8 text-gray-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Banking Debts</h3>
+                  <p className="text-gray-600 mb-4">Start tracking your credit cards, loans, and other banking debts.</p>
+                  <Button
+                    onClick={() => setShowAddForm(true)}
+                    variant="gradient"
+                    className="shadow-lg"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Banking Debt
+                  </Button>
+                </CardContent>
+              </Card>
             ) : (
-              <div className="text-center py-8">
-                <Calculator className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500">Select a debt to view payment schedule</p>
-              </div>
+              activeDebts.map((debt) => (
+                <Card key={debt.id} variant="glass" className="group">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
+                      <div className="flex items-start space-x-3 sm:space-x-4 min-w-0 flex-1">
+                        <div className={`w-12 h-12 bg-gradient-to-br ${getCategoryColor(debt.category)} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
+                          <span className="text-white text-lg">{getCategoryIcon(debt.category)}</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{debt.name}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{debt.description || 'No description'}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <Badge variant="default" className="text-xs">
+                              {debt.category.replace('_', ' ').toUpperCase()}
+                            </Badge>
+                            <Badge variant="warning" className="text-xs">
+                              {debt.interestRate}% APR
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:items-end space-y-2 flex-shrink-0">
+                        <div className="text-right">
+                          <p className="text-lg sm:text-xl font-bold text-red-600">
+                            {formatVNDShort(debt.remainingAmount)}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            of {formatVNDShort(debt.totalAmount)}
+                          </p>
+                        </div>
+                        <div className="w-full sm:w-32">
+                          <Progress 
+                            value={((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100} 
+                            className="h-2"
+                          />
+                          <p className="text-xs text-gray-500 mt-1 text-center">
+                            {Math.round(((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100)}% paid
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-blue-600">
+                            {formatVNDShort(debt.monthlyPayment)}/month
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {debt.remainingMonths} months left
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </>
+      )}
 
-      {/* This Month & Next Month Payments */}
-      <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <Calendar className="h-5 w-5 text-green-500" />
-              <span>This Month&apos;s Payments</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {debtSummary.thisMonthPayments.map((payment) => {
-                const debt = debts.find(d => d.id === payment.debtId);
-                return (
-                  <div key={payment.id} className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className={`w-6 h-6 bg-gradient-to-br ${getCategoryColor(debt?.category || 'other')} rounded flex-shrink-0`}>
-                        <span className="text-white text-xs flex items-center justify-center h-full">
-                          {getCategoryIcon(debt?.category || 'other')}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate text-sm sm:text-base">{debt?.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">
-                          Interest: {formatVNDShort(payment.interestAmount)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right ml-3 flex-shrink-0">
-                      <p className="font-semibold text-green-600 text-sm sm:text-base">
-                        {formatVNDShort(payment.amount)}
-                      </p>
-                      <p className="text-xs text-gray-500">Due today</p>
-                    </div>
+      {activeTab === 'personal' && (
+        <>
+          {/* Add Personal Debt Button */}
+          <div className="flex justify-end">
+            <Button
+              onClick={() => setShowPersonalDebtForm(true)}
+              variant="gradient"
+              size="lg"
+              className="shadow-lg bg-gradient-to-r from-purple-500 to-pink-600"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Add Personal Debt
+            </Button>
+          </div>
+
+          {/* Personal Debt Summary Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total Borrowed</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600">
+                      {formatVNDShort(personalDebtSummary.totalPersonalDebt)}
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-sm sm:text-base">Total This Month</span>
-                <span className="font-bold text-green-600 text-sm sm:text-base">
-                  {formatVNDShort(debtSummary.thisMonthPayments.reduce((sum, p) => sum + p.amount, 0))}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card variant="glass">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              <span>Next Month&apos;s Payments</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {debtSummary.nextMonthPayments.map((payment) => {
-                const debt = debts.find(d => d.id === payment.debtId);
-                return (
-                  <div key={payment.id} className="flex justify-between items-center p-3 bg-white/50 rounded-lg">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className={`w-6 h-6 bg-gradient-to-br ${getCategoryColor(debt?.category || 'other')} rounded flex-shrink-0`}>
-                        <span className="text-white text-xs flex items-center justify-center h-full">
-                          {getCategoryIcon(debt?.category || 'other')}
-                        </span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate text-sm sm:text-base">{debt?.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">
-                          Interest: {formatVNDShort(payment.interestAmount)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right ml-3 flex-shrink-0">
-                      <p className="font-semibold text-blue-600 text-sm sm:text-base">
-                        {formatVNDShort(payment.amount)}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {payment.paymentDate.toLocaleDateString()}
-                      </p>
-                    </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
-                );
-              })}
-            </div>
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-sm sm:text-base">Total Next Month</span>
-                <span className="font-bold text-blue-600 text-sm sm:text-base">
-                  {formatVNDShort(debtSummary.nextMonthPayments.reduce((sum, p) => sum + p.amount, 0))}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                </div>
+              </CardContent>
+            </Card>
 
-      {/* Add Debt Form Modal */}
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total Paid</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">
+                      {formatVNDShort(personalDebtSummary.totalPaidAmount)}
+                    </p>
+                  </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Active Debts</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600">
+                      {personalDebtSummary.activeDebtsCount}
+                    </p>
+                  </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card variant="glass" className="group">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                  <div className="order-2 sm:order-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Paid Off</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
+                      {personalDebtSummary.paidOffDebtsCount}
+                    </p>
+                  </div>
+                  <div className="order-1 sm:order-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Personal Debts List */}
+          <div className="grid gap-4 sm:gap-6">
+            {activePersonalDebts.length === 0 ? (
+              <Card variant="glass">
+                <CardContent className="p-6 sm:p-8 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Personal Debts</h3>
+                  <p className="text-gray-600 mb-4">Track money you owe to friends, family, or colleagues.</p>
+                  <Button
+                    onClick={() => setShowPersonalDebtForm(true)}
+                    variant="gradient"
+                    className="shadow-lg bg-gradient-to-r from-purple-500 to-pink-600"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Personal Debt
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              activePersonalDebts.map((debt) => (
+                <Card key={debt.id} variant="glass" className="group">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
+                      <div className="flex items-start space-x-3 sm:space-x-4 min-w-0 flex-1">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                          <span className="text-white text-lg">
+                            {debt.category === 'friend' ? '👤' : 
+                             debt.category === 'family' ? '👨‍👩‍👧‍👦' :
+                             debt.category === 'colleague' ? '💼' : '📄'}
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">{debt.name}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{debt.description || 'No description'}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <Badge variant="default" className="text-xs">
+                              {debt.category.toUpperCase()}
+                            </Badge>
+                            <Badge variant="success" className="text-xs">
+                              No Interest
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:items-end space-y-2 flex-shrink-0">
+                        <div className="text-right">
+                          <p className="text-lg sm:text-xl font-bold text-purple-600">
+                            {formatVNDShort(debt.remainingAmount)}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            of {formatVNDShort(debt.totalAmount)}
+                          </p>
+                        </div>
+                        <div className="w-full sm:w-32">
+                          <Progress 
+                            value={((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100} 
+                            className="h-2"
+                          />
+                          <p className="text-xs text-gray-500 mt-1 text-center">
+                            {Math.round(((debt.totalAmount - debt.remainingAmount) / debt.totalAmount) * 100)}% paid
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            size="sm"
+                            variant="gradient"
+                            onClick={() => setShowPaymentForm(debt.id)}
+                            className="text-xs bg-gradient-to-r from-green-500 to-emerald-600"
+                          >
+                            <DollarSign className="h-3 w-3 mr-1" />
+                            Pay
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Form Modals */}
       {showAddForm && (
         <DebtForm
           onClose={() => setShowAddForm(false)}
+          onSuccess={() => {
+            // Refresh data or show success message
+          }}
+        />
+      )}
+
+      {showPersonalDebtForm && (
+        <PersonalDebtForm
+          onClose={() => setShowPersonalDebtForm(false)}
+          onSuccess={() => {
+            // Refresh data or show success message
+          }}
+        />
+      )}
+
+      {showPaymentForm && (
+        <PersonalDebtPaymentForm
+          personalDebtId={showPaymentForm}
+          onClose={() => setShowPaymentForm(null)}
           onSuccess={() => {
             // Refresh data or show success message
           }}

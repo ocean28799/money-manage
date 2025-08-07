@@ -158,7 +158,7 @@
   }
 }
 
-/* Safe area support for iPhone with notch */
+/* Safe area support for iPhone with notch and Safari UI */
 @supports (padding: env(safe-area-inset-bottom)) {
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
@@ -166,6 +166,43 @@
   
   .pt-safe {
     padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-insets {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Fix for Safari UI bar on iPhone */
+  .safe-content-area {
+    min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* This targets iOS Safari specifically */
+  
+  /* Fix viewport height issues with Safari UI */
+  .ios-vh-fix {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+  
+  /* Fix for bottom navigation overlap with Safari UI */
+  .ios-bottom-nav {
+    bottom: env(safe-area-inset-bottom, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  }
+  
+  /* Fix for modal positioning on iOS Safari */
+  .ios-modal-fix {
+    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  
+  /* Fix content padding for iOS Safari */
+  .ios-content-padding {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
   }
 }
 

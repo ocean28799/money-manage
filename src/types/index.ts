@@ -57,6 +57,20 @@ export interface Debt {
   updatedAt: Date;
 }
 
+export interface PersonalDebt {
+  id: string;
+  userId: string;
+  name: string; // Name of the person (friend, family member)
+  description?: string; // What the debt is for
+  totalAmount: number;
+  remainingAmount: number;
+  startDate: Date;
+  category: 'friend' | 'family' | 'colleague' | 'other';
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface DebtPayment {
   id: string;
   debtId: string;
@@ -64,6 +78,15 @@ export interface DebtPayment {
   paymentDate: Date;
   principalAmount: number;
   interestAmount: number;
+  remainingBalance: number;
+}
+
+export interface PersonalDebtPayment {
+  id: string;
+  personalDebtId: string;
+  amount: number;
+  paymentDate: Date;
+  description?: string;
   remainingBalance: number;
 }
 

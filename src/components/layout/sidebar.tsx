@@ -9,7 +9,6 @@ import {
   CheckSquare,
   Calendar,
   Settings,
-  Menu,
   X,
   CreditCard,
   PiggyBank,
@@ -69,8 +68,8 @@ export default function Sidebar({ children }: SidebarProps) {
       )}
 
       {/* Enhanced Mobile Bottom Navigation Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl">
-        <div className="flex items-center justify-around px-1 py-2 pb-safe">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl safe-area-insets">
+        <div className="flex items-center justify-around px-1 py-2 pb-safe" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
           {navigation.slice(0, 4).map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -259,9 +258,12 @@ export default function Sidebar({ children }: SidebarProps) {
 
       {/* Main content with modern layout */}
       <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
-        {/* Page content with mobile spacing */}
-        <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <div className="p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
+        {/* Main content with mobile spacing and safe areas */}
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" style={{ 
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: 'max(5rem, calc(5rem + env(safe-area-inset-bottom)))'
+        }}>
+          <div className="p-4 sm:p-6 lg:p-8" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             {children}
           </div>
         </main>
