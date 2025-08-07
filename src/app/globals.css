@@ -196,13 +196,46 @@
   
   /* Fix for modal positioning on iOS Safari */
   .ios-modal-fix {
-    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    max-height: 100vh;
+    max-height: calc(var(--vh, 1vh) * 100);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
+  }
+  
+  /* Fix for modal content height on iOS Safari */
+  .ios-modal-content {
+    max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+    max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix for modal card on iOS Safari to prevent overflow */
+  .ios-modal-card {
+    margin-top: auto;
+    margin-bottom: auto;
+    max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+    max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
   }
   
   /* Fix content padding for iOS Safari */
   .ios-content-padding {
     padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Additional spacing for forms and buttons */
+  .ios-form-spacing {
+    margin-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Safe area for any bottom fixed elements */
+  .ios-bottom-safe {
+    bottom: env(safe-area-inset-bottom, 0);
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
   }
 }
 

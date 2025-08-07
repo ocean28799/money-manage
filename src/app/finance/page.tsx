@@ -34,7 +34,7 @@ export default function FinancePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ios-content-padding">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-600/10 via-emerald-600/10 to-teal-600/10 rounded-3xl" />

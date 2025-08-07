@@ -19,10 +19,19 @@ window.addEventListener('orientationchange', () => {
 // iOS Safari specific fixes
 if (navigator.userAgent.includes('Safari') && navigator.userAgent.includes('iPhone')) {
   // Prevent zoom on input focus
-  const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea');
-  inputs.forEach(input => {
-    input.style.fontSize = '16px';
-  });
+  const setupInputs = () => {
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea');
+    inputs.forEach(input => {
+      input.style.fontSize = '16px';
+    });
+  };
+  
+  // Setup inputs on load and when DOM changes
+  setupInputs();
+  
+  // Use MutationObserver to handle dynamically added inputs
+  const observer = new MutationObserver(setupInputs);
+  observer.observe(document.body, { childList: true, subtree: true });
 
   // Handle viewport changes when Safari UI appears/disappears
   const handleViewportChange = () => {
@@ -43,6 +52,19 @@ if (navigator.userAgent.includes('Safari') && navigator.userAgent.includes('iPho
     if (Math.abs(window.scrollY - lastScrollY) > 50) {
       handleViewportChange();
       lastScrollY = window.scrollY;
+    }
+  });
+  
+  // Handle input focus/blur for keyboard appearance
+  document.addEventListener('focusin', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      setTimeout(handleViewportChange, 300);
+    }
+  });
+  
+  document.addEventListener('focusout', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      setTimeout(handleViewportChange, 300);
     }
   });
 }
