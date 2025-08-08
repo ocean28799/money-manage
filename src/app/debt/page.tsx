@@ -41,6 +41,41 @@ export default function DebtPage() {
   const personalDebtSummary = getPersonalDebtSummary();
   const activeDebts = debts.filter(debt => debt.isActive);
   const activePersonalDebts = personalDebts.filter(debt => debt.isActive);
+
+  // If any form is showing, display it inline like the loan page
+  if (showAddForm) {
+    return (
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+        <DebtForm
+          onClose={() => setShowAddForm(false)}
+          onSuccess={() => setShowAddForm(false)}
+        />
+      </div>
+    );
+  }
+
+  if (showPersonalDebtForm) {
+    return (
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+        <PersonalDebtForm
+          onClose={() => setShowPersonalDebtForm(false)}
+          onSuccess={() => setShowPersonalDebtForm(false)}
+        />
+      </div>
+    );
+  }
+
+  if (showPaymentForm) {
+    return (
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+        <PersonalDebtPaymentForm
+          personalDebtId={showPaymentForm}
+          onClose={() => setShowPaymentForm(null)}
+          onSuccess={() => setShowPaymentForm(null)}
+        />
+      </div>
+    );
+  }
   
   const getCategoryIcon = (category: string) => {
     const icons = {

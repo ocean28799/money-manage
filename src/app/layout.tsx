@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Sidebar from "@/components/layout/sidebar";
 import Script from "next/script";
@@ -6,7 +6,15 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "Migo Assistant - Personal Finance & Task Management",
   description: "Modern personal finance and task management application",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover, interactive-widget=resizes-content",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
 };
 
 export default function RootLayout({
@@ -19,7 +27,7 @@ export default function RootLayout({
       <body>
         <Script
           src="/ios-safari-fix.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         <Sidebar>{children}</Sidebar>
       </body>

@@ -1,33 +1,38 @@
 // iOS Safari viewport height fix
 function setIOSViewportHeight() {
+  // Only run on client side
+  if (typeof window === 'undefined') return;
+  
   // Calculate the actual viewport height
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
-// Call on load
-setIOSViewportHeight();
+// Only run on client side
+if (typeof window !== 'undefined') {
+  // Call on load
+  setIOSViewportHeight();
 
-// Call on resize
-window.addEventListener('resize', setIOSViewportHeight);
+  // Call on resize
+  window.addEventListener('resize', setIOSViewportHeight);
 
-// Call on orientation change for mobile devices
-window.addEventListener('orientationchange', () => {
-  setTimeout(setIOSViewportHeight, 100);
-});
+  // Call on orientation change for mobile devices
+  window.addEventListener('orientationchange', () => {
+    setTimeout(setIOSViewportHeight, 100);
+  });
 
-// iOS Safari specific fixes
-if (navigator.userAgent.includes('Safari') && navigator.userAgent.includes('iPhone')) {
-  // Prevent zoom on input focus
-  const setupInputs = () => {
-    const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea');
-    inputs.forEach(input => {
-      input.style.fontSize = '16px';
-    });
-  };
-  
-  // Setup inputs on load and when DOM changes
-  setupInputs();
+  // iOS Safari specific fixes
+  if (navigator.userAgent.includes('Safari') && navigator.userAgent.includes('iPhone')) {
+    // Prevent zoom on input focus
+    const setupInputs = () => {
+      const inputs = document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea');
+      inputs.forEach(input => {
+        input.style.fontSize = '16px';
+      });
+    };
+    
+    // Setup inputs on load and when DOM changes
+    setupInputs();
   
   // Use MutationObserver to handle dynamically added inputs
   const observer = new MutationObserver(setupInputs);
@@ -67,4 +72,5 @@ if (navigator.userAgent.includes('Safari') && navigator.userAgent.includes('iPho
       setTimeout(handleViewportChange, 300);
     }
   });
+  }
 }
