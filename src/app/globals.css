@@ -206,22 +206,37 @@
     padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
   }
   
-  /* Fix for modal content height on iOS Safari */
+  /* Fix for modal content height on iOS Safari - reduced to prevent overlap */
   .ios-modal-content {
-    max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
-    max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+    /* Fallback using JS-updated --vh */
+    max-height: calc(var(--vh, 1vh) * 82);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
   
-  /* Fix for modal card on iOS Safari to prevent overflow */
+  /* Fix for modal card on iOS Safari - reduced overall height */
   .ios-modal-card {
     margin-top: auto;
     margin-bottom: auto;
-    max-height: calc(100vh - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
-    max-height: calc(var(--vh, 1vh) * 100 - env(safe-area-inset-top, 0) - env(safe-area-inset-bottom, 0) - 2rem);
+    /* Fallback using JS-updated --vh */
+    max-height: calc(var(--vh, 1vh) * 88);
   }
-  
+
+  /* Prefer modern dynamic viewport units where supported */
+  @supports (height: 100dvh) {
+    .ios-modal-fix {
+      height: 100dvh;
+      max-height: 100dvh;
+    }
+    .ios-modal-content {
+      max-height: 82dvh;
+    }
+    .ios-modal-card {
+      max-height: 88dvh;
+    }
+  }
+
   /* Fix content padding for iOS Safari */
   .ios-content-padding {
     padding-bottom: calc(6rem + env(safe-area-inset-bottom));
