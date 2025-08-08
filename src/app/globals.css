@@ -209,7 +209,7 @@
   /* Fix for modal content height on iOS Safari - reduced to prevent overlap */
   .ios-modal-content {
     /* Fallback using JS-updated --vh */
-    max-height: calc(var(--vh, 1vh) * 82);
+    max-height: calc(var(--vh, 1vh) * 76);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: env(safe-area-inset-bottom, 0);
