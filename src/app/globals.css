@@ -206,34 +206,30 @@
     padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
   }
   
-  /* Fix for modal content height on iOS Safari - reduced to prevent overlap */
+  /* Fix for modal content height on iOS Safari - reduced a bit more */
   .ios-modal-content {
     /* Fallback using JS-updated --vh */
-    max-height: calc(var(--vh, 1vh) * 76);
+    max-height: calc(var(--vh, 1vh) * 72);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
   
-  /* Fix for modal card on iOS Safari - reduced overall height */
+  /* Fix for modal card on iOS Safari - reduced overall height a bit more */
   .ios-modal-card {
     margin-top: auto;
     margin-bottom: auto;
     /* Fallback using JS-updated --vh */
-    max-height: calc(var(--vh, 1vh) * 88);
+    max-height: calc(var(--vh, 1vh) * 84);
   }
 
   /* Prefer modern dynamic viewport units where supported */
   @supports (height: 100dvh) {
-    .ios-modal-fix {
-      height: 100dvh;
-      max-height: 100dvh;
-    }
     .ios-modal-content {
-      max-height: 82dvh;
+      max-height: 78dvh;
     }
     .ios-modal-card {
-      max-height: 88dvh;
+      max-height: 84dvh;
     }
   }
 
