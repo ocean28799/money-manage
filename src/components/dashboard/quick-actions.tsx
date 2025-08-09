@@ -15,6 +15,7 @@ import {
   Target,
   CreditCard
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const expenseCategories = [
   { name: 'food', icon: '🍽️', color: 'from-orange-500 to-red-500' },
@@ -27,6 +28,7 @@ const expenseCategories = [
 ];
 
 export default function QuickActions() {
+  const router = useRouter();
   const [quickExpenseAmount, setQuickExpenseAmount] = useState('');
   const [quickTaskTitle, setQuickTaskTitle] = useState('');
   const [showQuickForms, setShowQuickForms] = useState(false);
@@ -98,7 +100,7 @@ export default function QuickActions() {
             variant="morphic"
             size="lg"
             className="h-20 flex-col space-y-2"
-            onClick={() => window.location.href = '/finance'}
+            onClick={() => router.push('/finance')}
           >
             <DollarSign className="h-6 w-6" />
             <span className="text-sm font-medium">Add Transaction</span>
@@ -108,7 +110,7 @@ export default function QuickActions() {
             variant="morphic"
             size="lg"
             className="h-20 flex-col space-y-2"
-            onClick={() => window.location.href = '/debt'}
+            onClick={() => router.push('/debt')}
           >
             <CreditCard className="h-6 w-6" />
             <span className="text-sm font-medium">Manage Debt</span>
@@ -118,7 +120,7 @@ export default function QuickActions() {
             variant="morphic"
             size="lg"
             className="h-20 flex-col space-y-2"
-            onClick={() => window.location.href = '/tasks/daily'}
+            onClick={() => router.push('/tasks/daily')}
           >
             <CheckSquare className="h-6 w-6" />
             <span className="text-sm font-medium">Add Daily Task</span>
@@ -128,7 +130,7 @@ export default function QuickActions() {
             variant="morphic"
             size="lg"
             className="h-20 flex-col space-y-2"
-            onClick={() => window.location.href = '/tasks/monthly'}
+            onClick={() => router.push('/tasks/monthly')}
           >
             <Target className="h-6 w-6" />
             <span className="text-sm font-medium">Monthly Goals</span>

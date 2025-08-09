@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Task } from '@/types';
 
+// Simple ID generator for client-side
+const generateId = () => {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 interface TaskStore {
   tasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -24,7 +29,7 @@ export const useTaskStore = create<TaskStore>()(
         ...state.tasks,
         {
           ...task,
-          id: Date.now().toString(),
+          id: generateId(),
           createdAt: new Date(),
           updatedAt: new Date(),
         },

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
 import { useDebtStore } from '@/store/debt-store';
@@ -8,10 +9,27 @@ import { formatVNDShort } from '@/lib/utils';
 import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Clock, CreditCard } from 'lucide-react';
 
 export default function StatsCards() {
+  const [mounted, setMounted] = useState(false);
   const { getFinanceSummary } = useFinanceStore();
   const { getDebtSummary } = useDebtStore();
   const { getTaskStats } = useTaskStore();
   
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="relative overflow-hidden animate-pulse">
+            <div className="h-32 bg-gray-200 rounded-lg"></div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   const financeSummary = getFinanceSummary();
   const debtSummary = getDebtSummary();
   const taskStats = getTaskStats();

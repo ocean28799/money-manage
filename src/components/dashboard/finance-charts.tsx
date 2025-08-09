@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFinanceStore } from '@/store/finance-store';
 import {
@@ -24,7 +25,26 @@ const COLORS = [
 ];
 
 export default function FinanceCharts() {
+  const [mounted, setMounted] = useState(false);
   const { getMonthlyData, getTransactionsByCategory } = useFinanceStore();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {[...Array(2)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="h-80 bg-gray-200 rounded-lg"></div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
   
   const monthlyData = getMonthlyData();
   const categoryData = getTransactionsByCategory();

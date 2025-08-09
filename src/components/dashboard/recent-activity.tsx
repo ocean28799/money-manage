@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,10 +18,30 @@ import {
   Filter
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 export default function RecentActivity() {
+  const [mounted, setMounted] = useState(false);
+  const router = useRouter();
   const { transactions } = useFinanceStore();
   const { tasks } = useTaskStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="animate-pulse">
+          <div className="h-80 bg-gray-200 rounded-lg"></div>
+        </Card>
+        <Card className="animate-pulse">
+          <div className="h-80 bg-gray-200 rounded-lg"></div>
+        </Card>
+      </div>
+    );
+  }
 
   // Get recent transactions (last 5)
   const recentTransactions = transactions
@@ -152,7 +173,7 @@ export default function RecentActivity() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => window.location.href = '/finance'}
+            onClick={() => router.push('/finance')}
           >
             View All Transactions
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -242,7 +263,7 @@ export default function RecentActivity() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => window.location.href = '/tasks/daily'}
+            onClick={() => router.push('/tasks/daily')}
           >
             View All Tasks
             <ArrowRight className="h-4 w-4 ml-2" />

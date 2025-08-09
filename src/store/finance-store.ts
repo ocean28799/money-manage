@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Transaction, FinanceSummary } from '@/types';
 
+// Simple ID generator for client-side
+const generateId = () => {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 interface TransactionTemplate {
   id: string;
   name: string;
@@ -92,7 +97,7 @@ export const useFinanceStore = create<FinanceStore>()(
     set((state) => ({
       transactions: [
         ...state.transactions,
-        { ...transaction, id: Date.now().toString() },
+        { ...transaction, id: generateId() },
       ],
     })),
 
@@ -112,7 +117,7 @@ export const useFinanceStore = create<FinanceStore>()(
     set((state) => ({
       templates: [
         ...state.templates,
-        { ...template, id: Date.now().toString() },
+        { ...template, id: generateId() },
       ],
     })),
 
