@@ -2,9 +2,6 @@
 
 /* Modern CSS Variables for Enhanced Design */
 :root {
-  /* Default viewport height - will be overridden by JavaScript on client */
-  --vh: 1vh;
-  
   --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -182,75 +179,52 @@
   }
 }
 
-/* iOS Safari specific fixes */
-@supports (-webkit-touch-callout: none) {
-  /* This targets iOS Safari specifically */
-  
-  /* Fix viewport height issues with Safari UI */
-  .ios-vh-fix {
-    height: calc(var(--vh, 1vh) * 100);
-  }
-  
-  /* Fix for bottom navigation overlap with Safari UI */
-  .ios-bottom-nav {
-    bottom: env(safe-area-inset-bottom, 0);
-    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-  }
-  
-  /* Fix for modal positioning on iOS Safari */
-  .ios-modal-fix {
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100);
-    max-height: 100vh;
-    max-height: calc(var(--vh, 1vh) * 100);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-top: env(safe-area-inset-top, 0);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
-  }
-  
-  /* Fix for modal content height on iOS Safari - reduced a bit more */
-  .ios-modal-content {
-    /* Fallback using JS-updated --vh */
-    max-height: calc(var(--vh, 1vh) * 72);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-  
-  /* Fix for modal card on iOS Safari - reduced overall height a bit more */
-  .ios-modal-card {
-    margin-top: auto;
-    margin-bottom: auto;
-    /* Fallback using JS-updated --vh */
-    max-height: calc(var(--vh, 1vh) * 84);
-  }
+/* Modern viewport and safe area handling */
+.viewport-height {
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height where supported */
+}
 
-  /* Prefer modern dynamic viewport units where supported */
-  @supports (height: 100dvh) {
-    .ios-modal-content {
-      max-height: 78dvh;
-    }
-    .ios-modal-card {
-      max-height: 84dvh;
-    }
-  }
+.modal-container {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
 
-  /* Fix content padding for iOS Safari */
-  .ios-content-padding {
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
-  }
-  
-  /* Additional spacing for forms and buttons */
-  .ios-form-spacing {
-    margin-bottom: calc(2rem + env(safe-area-inset-bottom));
-  }
-  
-  /* Safe area for any bottom fixed elements */
-  .ios-bottom-safe {
-    bottom: env(safe-area-inset-bottom, 0);
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
-  }
+.modal-content {
+  max-height: 78vh;
+  max-height: 78dvh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.modal-card {
+  margin-top: auto;
+  margin-bottom: auto;
+  max-height: 84vh;
+  max-height: 84dvh;
+}
+
+.bottom-navigation {
+  bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+}
+
+.content-padding {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0));
+}
+
+.form-spacing {
+  margin-bottom: calc(2rem + env(safe-area-inset-bottom, 0));
+}
+
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
 /* Modern sidebar animations */

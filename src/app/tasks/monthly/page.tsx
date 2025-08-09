@@ -3,7 +3,7 @@ import TaskList from '@/components/tasks/task-list';
 
 export default function MonthlyTasksPage() {
   return (
-    <div className="space-y-6 ios-content-padding">
+    <div className="space-y-6 content-padding">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Monthly Goals</h1>
         <p className="text-gray-600 mt-2">

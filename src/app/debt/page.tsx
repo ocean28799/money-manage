@@ -45,7 +45,7 @@ export default function DebtPage() {
   // If any form is showing, display it inline like the loan page
   if (showAddForm) {
     return (
-      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden content-padding">
         <DebtForm
           onClose={() => setShowAddForm(false)}
           onSuccess={() => setShowAddForm(false)}
@@ -56,7 +56,7 @@ export default function DebtPage() {
 
   if (showPersonalDebtForm) {
     return (
-      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden content-padding">
         <PersonalDebtForm
           onClose={() => setShowPersonalDebtForm(false)}
           onSuccess={() => setShowPersonalDebtForm(false)}
@@ -67,7 +67,7 @@ export default function DebtPage() {
 
   if (showPaymentForm) {
     return (
-      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+      <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden content-padding">
         <PersonalDebtPaymentForm
           personalDebtId={showPaymentForm}
           onClose={() => setShowPaymentForm(null)}
@@ -100,7 +100,7 @@ export default function DebtPage() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden ios-content-padding">
+    <div className="space-y-4 sm:space-y-6 max-w-full overflow-hidden content-padding">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-red-600/10 via-orange-600/10 to-yellow-600/10 rounded-2xl sm:rounded-3xl" />

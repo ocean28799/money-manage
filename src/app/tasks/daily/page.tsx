@@ -11,7 +11,7 @@ export default function DailyTasksPage() {
   const totalTasks = 0;
 
   return (
-    <div className="space-y-6 lg:space-y-8 ios-content-padding">
+    <div className="space-y-6 lg:space-y-8 content-padding">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Animated background */}
