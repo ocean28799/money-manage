@@ -92,6 +92,13 @@ export const useTaskStore = create<TaskStore>()(
 }),
 {
   name: 'task-store',
-  partialize: (state) => ({ tasks: state.tasks }),
+  onRehydrateStorage: () => (state, error) => {
+    if (error) {
+      console.error('Error rehydrating task store:', error);
+      return { tasks: [] };
+    }
+  },
+  partialize: (state) => ({ tasks: state.tasks || [] }),
+  version: 1,
 }
 ));

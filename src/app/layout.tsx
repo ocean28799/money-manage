@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Sidebar from "@/components/layout/sidebar";
 import ErrorBoundary from "@/components/error-boundary";
+import ErrorLogger from "@/components/error-logger";
+import DebugPanel from "@/components/debug-panel";
 
 export const metadata: Metadata = {
   title: "Migo Assistant - Personal Finance & Task Management",
@@ -25,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ErrorLogger />
         <ErrorBoundary>
           <Sidebar>{children}</Sidebar>
         </ErrorBoundary>
+        <DebugPanel />
       </body>
     </html>
   );

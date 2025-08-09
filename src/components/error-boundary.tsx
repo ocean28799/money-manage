@@ -24,6 +24,20 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
+    
+    // Log additional debugging information
+    console.error('Error stack:', error.stack);
+    console.error('Component stack:', errorInfo.componentStack);
+    
+    // In development, also log to help debug
+    if (process.env.NODE_ENV === 'development') {
+      console.group('🚨 Error Boundary Debug Info');
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Component stack:', errorInfo.componentStack);
+      console.groupEnd();
+    }
   }
 
   render() {
@@ -44,10 +58,23 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <p className="text-gray-600 mb-4">
                 We encountered an unexpected error. Please try refreshing the page.
               </p>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="text-left bg-gray-100 p-3 rounded text-sm">
-                  <summary className="cursor-pointer font-medium">Error Details</summary>
-                  <pre className="mt-2 whitespace-pre-wrap">{this.state.error.toString()}</pre>
+              {this.state.error && (
+                <details className="text-left bg-gray-100 p-3 rounded text-sm mb-4">
+                  <summary className="cursor-pointer font-medium mb-2">Error Details</summary>
+                  <div className="space-y-2">
+                    <div>
+                      <strong>Error:</strong> {this.state.error.name}
+                    </div>
+                    <div>
+                      <strong>Message:</strong> {this.state.error.message}
+                    </div>
+                    <div>
+                      <strong>Stack:</strong>
+                      <pre className="mt-1 whitespace-pre-wrap text-xs bg-gray-200 p-2 rounded max-h-32 overflow-y-auto">
+                        {this.state.error.stack}
+                      </pre>
+                    </div>
+                  </div>
                 </details>
               )}
             </div>
