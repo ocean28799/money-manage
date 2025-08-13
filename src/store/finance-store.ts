@@ -54,6 +54,7 @@ interface FinanceStore {
   addTemplate: (template: Omit<TransactionTemplate, 'id'>) => void;
   deleteTemplate: (id: string) => void;
   createTransactionFromTemplate: (templateId: string) => void;
+  getFinanceSummary: () => FinanceSummary;
   getTransactionsByDateRange: (startDate: Date, endDate: Date) => Transaction[];
   getTransactionsByMonth: (month: number, year: number) => Transaction[];
   getFinanceSummaryForPeriod: (transactions: Transaction[]) => FinanceSummary;

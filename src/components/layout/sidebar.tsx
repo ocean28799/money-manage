@@ -6,8 +6,6 @@ import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   DollarSign,
-  CheckSquare,
-  Calendar,
   Settings,
   X,
   CreditCard,
