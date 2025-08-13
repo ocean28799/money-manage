@@ -54,7 +54,9 @@ interface FinanceStore {
   addTemplate: (template: Omit<TransactionTemplate, 'id'>) => void;
   deleteTemplate: (id: string) => void;
   createTransactionFromTemplate: (templateId: string) => void;
-  getFinanceSummary: () => FinanceSummary;
+  getTransactionsByDateRange: (startDate: Date, endDate: Date) => Transaction[];
+  getTransactionsByMonth: (month: number, year: number) => Transaction[];
+  getFinanceSummaryForPeriod: (transactions: Transaction[]) => FinanceSummary;
   getTransactionsByCategory: () => Record<string, number>;
   getMonthlyData: () => Array<{ month: string; income: number; expenses: number }>;
   getRecentTransactions: (limit?: number) => Transaction[];
@@ -173,6 +175,67 @@ export const useFinanceStore = create<FinanceStore>()(
     return transactions
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, limit);
+  },
+
+  getTransactionsByDateRange: (startDate: Date, endDate: Date) => {
+    const { transactions } = get();
+    return transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= startDate && transactionDate <= endDate;
+    });
+  },
+
+  getTransactionsByMonth: (month: number, year: number) => {
+    const { transactions } = get();
+    return transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate.getMonth() === month && transactionDate.getFullYear() === year;
+    });
+  },
+
+  getFinanceSummaryForPeriod: (periodTransactions: Transaction[]) => {
+    try {
+      if (!Array.isArray(periodTransactions)) {
+        return {
+          totalIncome: 0,
+          totalExpenses: 0,
+          balance: 0,
+          monthlyIncome: 0,
+          monthlyExpenses: 0,
+          remainingMoney: 0,
+          monthlyBudget: 0,
+        };
+      }
+      
+      const totalIncome = periodTransactions
+        .filter((t) => t && t.type === 'income' && typeof t.amount === 'number')
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const totalExpenses = periodTransactions
+        .filter((t) => t && t.type === 'expense' && typeof t.amount === 'number')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      return {
+        totalIncome,
+        totalExpenses,
+        balance: totalIncome - totalExpenses,
+        monthlyIncome: totalIncome,
+        monthlyExpenses: totalExpenses,
+        remainingMoney: totalIncome - totalExpenses,
+        monthlyBudget: totalIncome,
+      };
+    } catch (error) {
+      console.error('Error in getFinanceSummaryForPeriod:', error);
+      return {
+        totalIncome: 0,
+        totalExpenses: 0,
+        balance: 0,
+        monthlyIncome: 0,
+        monthlyExpenses: 0,
+        remainingMoney: 0,
+        monthlyBudget: 0,
+      };
+    }
   },
 
   getFinanceSummary: () => {

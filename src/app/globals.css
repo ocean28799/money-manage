@@ -28,9 +28,19 @@
 
 /* Mobile optimization for iPhone 12 Pro and similar devices */
 @media (max-width: 768px) {
-  /* Improve touch targets */
-  button, input, select, textarea {
+  /* Improve touch targets - minimum 44px for accessibility */
+  button, input, select, textarea, a[role="button"] {
     min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Specific touch improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
   
   /* Better spacing for mobile */
@@ -47,13 +57,28 @@
   }
   
   /* Improved form inputs for mobile */
-  input[type="number"] {
+  input[type="number"], 
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"],
+  input[type="date"],
+  select, 
+  textarea {
     font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 48px;
+  }
+  
+  /* Better button sizes for mobile */
+  .btn-mobile {
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
   }
   
   /* Better card spacing */
   .card-mobile {
     margin-bottom: 1rem;
+    padding: 1rem;
   }
   
   /* Optimize scroll performance */
@@ -70,15 +95,36 @@
     padding: 1rem;
   }
   
+  .p-4 {
+    padding: 0.75rem;
+  }
+  
   /* Better grid layouts */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  
   .grid-cols-3 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
   }
   
   .grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
+  }
+  
+  /* Mobile navigation improvements */
+  .bottom-navigation {
+    padding: 0.75rem 0.5rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+  
+  .bottom-navigation a {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem;
   }
 }
 
@@ -90,10 +136,11 @@
     padding-right: 1rem;
   }
   
-  /* Button sizing */
+  /* Button sizing for better touch targets */
   .btn-mobile {
-    padding: 0.75rem 1rem;
+    padding: 0.875rem 1rem;
     font-size: 0.875rem;
+    min-height: 48px;
   }
   
   /* Typography scaling for better readability */
@@ -136,16 +183,23 @@
     line-height: 1.25rem;
   }
   
-  /* Grid adjustments */
+  /* Grid adjustments for better mobile layout */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  
   .grid-cols-3 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
   }
   
   .grid-cols-2 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
   }
   
-  /* Stats cards */
+  /* Stats cards optimized for mobile */
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
@@ -155,6 +209,38 @@
   .progress-mobile {
     width: 100%;
     max-width: none;
+  }
+  
+  /* Bottom navigation adjustments */
+  .bottom-nav-item {
+    min-height: 60px;
+    min-width: 60px;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  /* Form improvements for mobile */
+  .form-field-mobile {
+    margin-bottom: 1rem;
+  }
+  
+  /* Card adjustments */
+  .card-mobile-small {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Transaction items for mobile */
+  .transaction-item-mobile {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.75rem;
+  }
+  
+  /* Filter buttons mobile */
+  .filter-button-mobile {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    min-height: 44px;
   }
 }
 
@@ -172,10 +258,24 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
   
+  /* Enhanced bottom navigation with safe area */
+  .bottom-navigation {
+    bottom: 0;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+  
   /* Fix for Safari UI bar on iPhone */
   .safe-content-area {
     min-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Mobile content padding with safe areas */
+  .mobile-content-safe {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+    padding-top: env(safe-area-inset-top, 0);
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 }
 
@@ -456,54 +556,61 @@
 
 /* Mobile optimizations - reduce animations for better performance */
 @media (max-width: 768px) {
+  /* Disable most animations on mobile for better performance */
   * {
     transition: none !important;
     animation: none !important;
   }
   
+  /* Keep only essential transitions */
+  .bottom-navigation a,
+  .bottom-navigation button,
+  button:active,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    transition: background-color 0.2s ease, transform 0.1s ease !important;
+  }
+  
+  /* Active state feedback for better touch response */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
+  }
+  
+  /* Remove hover states on mobile */
+  .hover\:scale-105:hover,
+  .hover\:scale-110:hover,
+  .group-hover\:scale-110,
+  .group-hover\:rotate-12,
   .floating {
     animation: none !important;
-  }
-  
-  .card-3d:hover {
     transform: none !important;
   }
   
-  .neon-glow {
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2) !important;
+  /* Enable smooth transitions only for important UI elements */
+  .md\:hover\:scale-105:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
   }
   
-  .hover\:scale-105:hover {
-    transform: none !important;
-  }
-  
-  .hover\:scale-110:hover {
-    transform: none !important;
-  }
-  
-  .group-hover\:scale-110 {
-    transform: none !important;
-  }
-  
-  .group-hover\:rotate-12 {
-    transform: none !important;
-  }
-  
-  .md\:hover\:scale-105:hover {
-    transform: scale(1.05) !important;
-  }
-  
-  .md\:group-hover\:scale-110 {
-    transform: scale(1.1) !important;
+  .md\:group-hover\:scale-110:active {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
   }
   
   /* Optimize touch targets for mobile */
   button, 
   a[role="button"],
   input[type="button"],
-  input[type="submit"] {
+  input[type="submit"],
+  .touch-target {
     min-height: 44px;
     min-width: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   
   /* Reduce glassmorphism intensity on mobile */
@@ -512,13 +619,32 @@
     -webkit-backdrop-filter: blur(10px) !important;
   }
   
-  /* Simplify card shadows */
+  /* Simplify card shadows for better performance */
   .shadow-lg {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
   }
   
   .shadow-xl {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Bottom navigation specific optimizations */
+  .bottom-navigation {
+    will-change: auto;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Content scrolling optimization */
+  .main-content {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent horizontal scrolling issues */
+  body, html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 }
 

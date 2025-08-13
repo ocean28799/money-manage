@@ -22,8 +22,6 @@ const navigation = [
   { name: 'Finance', href: '/finance', icon: DollarSign, shortName: 'Finance' },
   { name: 'Debt Management', href: '/debt', icon: CreditCard, shortName: 'Debt' },
   { name: 'Loan Management', href: '/loan', icon: PiggyBank, shortName: 'Loans' },
-  { name: 'Daily Tasks', href: '/tasks/daily', icon: CheckSquare, shortName: 'Tasks' },
-  { name: 'Monthly Goals', href: '/tasks/monthly', icon: Calendar, shortName: 'Goals' },
 ];
 
 interface SidebarProps {
@@ -68,53 +66,33 @@ export default function Sidebar({ children }: SidebarProps) {
       )}
 
       {/* Enhanced Mobile Bottom Navigation Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl safe-area-insets">
-        <div className="flex items-center justify-around px-1 py-2 pb-safe" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
-          {navigation.slice(0, 4).map((item) => {
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-2xl">
+        <div className="flex items-center justify-around px-2 py-3" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
+          {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[52px] max-w-[72px] flex-1',
+                  'flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-200 min-w-[60px] flex-1 touch-manipulation',
                   isActive
-                    ? 'bg-gradient-to-t from-blue-500 to-purple-600 text-white shadow-lg scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
+                    ? 'bg-gradient-to-t from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/50 active:scale-95'
                 )}
+                style={{ 
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                  WebkitUserSelect: 'none',
+                  userSelect: 'none'
+                }}
               >
                 <item.icon className={cn(
-                  'h-4 w-4 mb-1 transition-transform',
-                  isActive ? 'text-white scale-110' : 'text-gray-500'
+                  'h-5 w-5 mb-1.5 transition-all duration-200',
+                  isActive ? 'text-white' : 'text-gray-500'
                 )} />
                 <span className={cn(
-                  'text-xs font-medium leading-none text-center',
-                  isActive ? 'text-white' : 'text-gray-600'
-                )}>
-                  {item.shortName}
-                </span>
-              </Link>
-            );
-          })}
-          {navigation.slice(4, 6).map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[52px] max-w-[72px] flex-1',
-                  isActive
-                    ? 'bg-gradient-to-t from-blue-500 to-purple-600 text-white shadow-lg scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95'
-                )}
-              >
-                <item.icon className={cn(
-                  'h-4 w-4 mb-1 transition-transform',
-                  isActive ? 'text-white scale-110' : 'text-gray-500'
-                )} />
-                <span className={cn(
-                  'text-xs font-medium leading-none text-center',
+                  'text-xs font-medium leading-tight text-center',
                   isActive ? 'text-white' : 'text-gray-600'
                 )}>
                   {item.shortName}
@@ -261,9 +239,9 @@ export default function Sidebar({ children }: SidebarProps) {
         {/* Main content with mobile spacing and safe areas */}
         <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" style={{ 
           WebkitOverflowScrolling: 'touch',
-          paddingBottom: 'max(5rem, calc(5rem + env(safe-area-inset-bottom)))'
+          paddingBottom: 'max(6rem, calc(6rem + env(safe-area-inset-bottom)))'
         }}>
-          <div className="p-4 sm:p-6 lg:p-8" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          <div className="p-4 sm:p-6 lg:p-8 min-h-full">
             {children}
           </div>
         </main>
