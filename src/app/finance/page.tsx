@@ -1,6 +1,6 @@
 'use client';
 
-import TransactionForm from '@/components/finance/transaction-form';
+import TransactionFormSuper from '@/components/finance/transaction-form-super';
 import TransactionList from '@/components/finance/transaction-list';
 import { Progress, CircularProgress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -383,7 +383,7 @@ export default function FinancePage() {
         </CardContent>
       </Card>
       
-      <TransactionForm />
+      <TransactionFormSuper />
       <TransactionList filteredTransactions={filteredTransactions} />
     </div>
   );

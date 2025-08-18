@@ -1,8 +1,11 @@
-import StatsCards from '@/components/dashboard/stats-cards';
+import StatsCards from '@/components/dashboard/stats-cards-enhanced';
 import FinanceCharts from '@/components/dashboard/finance-charts';
 import QuickActions from '@/components/dashboard/quick-actions';
 import RecentActivity from '@/components/dashboard/recent-activity';
+import Analytics from '@/components/dashboard/analytics';
+import SmartInsights from '@/components/dashboard/smart-insights';
 import { LoanSummaryCard } from '@/components/loan/loan-summary-card';
+import { NotificationCenter } from '@/components/ui/notifications';
 
 export default function Dashboard() {
   return (
@@ -33,14 +36,17 @@ export default function Dashboard() {
               </div>
             </div>
             
-            {/* Quick Access Buttons - hidden on mobile */}
-            <div className="hidden lg:flex items-center space-x-3">
-              <button className="glass px-4 py-2 rounded-full hover:scale-105 transition-all duration-300 text-sm font-medium text-gray-700 hover:text-blue-600">
-                ⚡ Quick Add
-              </button>
-              <button className="glass px-4 py-2 rounded-full hover:scale-105 transition-all duration-300 text-sm font-medium text-gray-700 hover:text-green-600">
-                📊 Analytics
-              </button>
+            {/* Quick Access Buttons with Notifications */}
+            <div className="flex items-center space-x-3">
+              <NotificationCenter />
+              <div className="hidden lg:flex items-center space-x-3">
+                <button className="glass px-4 py-2 rounded-full hover:scale-105 transition-all duration-300 text-sm font-medium text-gray-700 hover:text-blue-600">
+                  ⚡ Quick Add
+                </button>
+                <button className="glass px-4 py-2 rounded-full hover:scale-105 transition-all duration-300 text-sm font-medium text-gray-700 hover:text-green-600">
+                  📊 Analytics
+                </button>
+              </div>
             </div>
           </div>
           
@@ -62,13 +68,15 @@ export default function Dashboard() {
       {/* Quick Actions Grid */}
       <QuickActions />
       
-      {/* Stats Cards */}
+      {/* Enhanced Stats Cards */}
       <StatsCards />
       
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
-        <div className="xl:col-span-2">
+        <div className="xl:col-span-2 space-y-6">
           <FinanceCharts />
+          <Analytics />
+          <SmartInsights />
         </div>
         <div className="space-y-4 lg:space-y-6">
           <RecentActivity />

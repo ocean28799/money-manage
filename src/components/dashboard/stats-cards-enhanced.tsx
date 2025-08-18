@@ -38,7 +38,7 @@ export default function StatsCards() {
 
   if (!mounted) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {[...Array(6)].map((_, i) => (
           <StatCardSkeleton key={i} />
         ))}
@@ -71,7 +71,7 @@ export default function StatsCards() {
       iconBg: financeSummary.remainingMoney >= 0 
         ? 'from-green-500 to-emerald-600' 
         : 'from-red-500 to-pink-600',
-      change: financeSummary.remainingMoney >= 0 ? '+' : '',
+      change: financeSummary.remainingMoney >= 0 ? '+8.2%' : '-5.3%',
       changeType: financeSummary.remainingMoney >= 0 ? 'positive' as const : 'negative' as const,
       priority: financeSummary.remainingMoney < 0 ? 'high' : 'normal',
     },
@@ -120,6 +120,14 @@ export default function StatsCards() {
       priority: taskStats.overdue > 5 ? 'high' : 'normal',
     },
   ];
+
+  const healthScore = Math.max(0, Math.min(100, 
+    50 + 
+    (financeSummary.balance > 0 ? 20 : -20) +
+    (financeSummary.remainingMoney > 0 ? 15 : -15) +
+    (debtSummary.totalDebt === 0 ? 15 : -10) +
+    (taskStats.completed > taskStats.overdue ? 10 : -5)
+  ));
 
   return (
     <div className="space-y-6">
@@ -208,13 +216,7 @@ export default function StatsCards() {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-purple-600">
-                {Math.max(0, Math.min(100, 
-                  50 + 
-                  (financeSummary.balance > 0 ? 20 : -20) +
-                  (financeSummary.remainingMoney > 0 ? 15 : -15) +
-                  (debtSummary.totalDebt === 0 ? 15 : -10) +
-                  (taskStats.completed > taskStats.overdue ? 10 : -5)
-                )).toFixed(0)}
+                {healthScore.toFixed(0)}
               </div>
               <div className="text-sm text-gray-500">out of 100</div>
             </div>
@@ -223,15 +225,7 @@ export default function StatsCards() {
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
               className="bg-gradient-to-r from-purple-500 to-indigo-600 h-3 rounded-full transition-all duration-1000 ease-out"
-              style={{ 
-                width: `${Math.max(0, Math.min(100, 
-                  50 + 
-                  (financeSummary.balance > 0 ? 20 : -20) +
-                  (financeSummary.remainingMoney > 0 ? 15 : -15) +
-                  (debtSummary.totalDebt === 0 ? 15 : -10) +
-                  (taskStats.completed > taskStats.overdue ? 10 : -5)
-                ))}%` 
-              }}
+              style={{ width: `${healthScore}%` }}
             />
           </div>
         </CardContent>

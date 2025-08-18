@@ -13,23 +13,49 @@ const ensureDate = (date: Date | string): Date => {
   return new Date(date);
 };
 
-// Helper to validate and sanitize transaction
+// Helper to validate and sanitize transaction with enhanced backward compatibility
 const sanitizeTransaction = (transaction: unknown): Transaction | null => {
   try {
     if (!transaction || typeof transaction !== 'object') return null;
     
     const t = transaction as Record<string, unknown>;
     
+    // Handle legacy date formats and ensure proper date handling
+    let transactionDate: Date;
+    if (t.date instanceof Date) {
+      transactionDate = t.date;
+    } else if (typeof t.date === 'string') {
+      transactionDate = new Date(t.date);
+      // If invalid date, use current date
+      if (isNaN(transactionDate.getTime())) {
+        transactionDate = new Date();
+      }
+    } else if (typeof t.date === 'number') {
+      transactionDate = new Date(t.date);
+    } else {
+      transactionDate = new Date();
+    }
+    
+    // Handle legacy amount formats
+    let amount = 0;
+    if (typeof t.amount === 'number' && !isNaN(t.amount)) {
+      amount = t.amount;
+    } else if (typeof t.amount === 'string') {
+      const parsed = parseFloat(t.amount);
+      amount = !isNaN(parsed) ? parsed : 0;
+    }
+    
     return {
-      id: typeof t.id === 'string' ? t.id : generateId(),
-      userId: typeof t.userId === 'string' ? t.userId : '',
-      date: ensureDate(t.date as Date | string),
-      amount: typeof t.amount === 'number' ? t.amount : 0,
+      id: typeof t.id === 'string' && t.id ? t.id : generateId(),
+      userId: typeof t.userId === 'string' ? t.userId : '1', // Default userId for backward compatibility
+      date: transactionDate,
+      amount: amount,
       type: t.type === 'income' || t.type === 'expense' ? t.type as 'income' | 'expense' : 'expense',
-      category: typeof t.category === 'string' ? t.category : 'other',
+      category: typeof t.category === 'string' && t.category ? t.category : 'other',
       description: typeof t.description === 'string' ? t.description : '',
     };
-  } catch {
+  } catch (error) {
+    console.warn('Error sanitizing transaction:', error);
     return null;
   }
 };
@@ -388,7 +414,7 @@ export const useFinanceStore = create<FinanceStore>()(
 }),
 {
   name: 'finance-store',
-  // Add error handling for persistence
+  // Enhanced error handling and migration for persistence
   onRehydrateStorage: () => (state, error) => {
     if (error) {
       console.error('Error rehydrating finance store:', error);
@@ -399,24 +425,81 @@ export const useFinanceStore = create<FinanceStore>()(
       };
     }
     
-    // Sanitize transactions after rehydration
-    if (state && Array.isArray(state.transactions)) {
-      const sanitizedTransactions = state.transactions
+    if (!state) {
+      console.warn('No stored state found, using defaults');
+      return {
+        transactions: [],
+        templates: defaultTemplates,
+      };
+    }
+    
+    // Enhanced data migration and sanitization after rehydration
+    let sanitizedTransactions: Transaction[] = [];
+    if (Array.isArray(state.transactions)) {
+      sanitizedTransactions = state.transactions
         .map(sanitizeTransaction)
         .filter(Boolean) as Transaction[];
-      
+    }
+    
+    // Ensure templates exist and are valid
+    let validTemplates = defaultTemplates;
+    if (Array.isArray(state.templates) && state.templates.length > 0) {
+      validTemplates = [...defaultTemplates, ...state.templates.filter(template => 
+        template && typeof template === 'object' && 
+        typeof template.id === 'string' &&
+        typeof template.name === 'string'
+      )];
+    }
+    
+    console.log(`✅ Rehydrated ${sanitizedTransactions.length} transactions and ${validTemplates.length} templates`);
+    
+    return {
+      ...state,
+      transactions: sanitizedTransactions,
+      templates: validTemplates,
+    };
+  },
+  // Persist all store data with validation
+  partialize: (state) => {
+    try {
       return {
-        ...state,
-        transactions: sanitizedTransactions,
+        transactions: Array.isArray(state.transactions) ? state.transactions : [],
+        templates: Array.isArray(state.templates) ? state.templates : defaultTemplates,
+      };
+    } catch (error) {
+      console.error('Error partializing state:', error);
+      return {
+        transactions: [],
+        templates: defaultTemplates,
       };
     }
   },
-  // Persist all store data
-  partialize: (state) => ({
-    transactions: state.transactions || [],
-    templates: state.templates || defaultTemplates,
-  }),
   // Add version for migration support
-  version: 1,
+  version: 2, // Increased version for enhanced migration
+  migrate: (persistedState: unknown, version: number) => {
+    // Migration logic for older versions
+    if (version < 2) {
+      console.log('Migrating finance store from version', version, 'to 2');
+      if (persistedState && typeof persistedState === 'object') {
+        const state = persistedState as Record<string, unknown>;
+        // Ensure transactions array exists
+        if (!Array.isArray(state.transactions)) {
+          state.transactions = [];
+        }
+        // Ensure templates exist
+        if (!Array.isArray(state.templates)) {
+          state.templates = defaultTemplates;
+        }
+        // Sanitize all existing transactions
+        if (Array.isArray(state.transactions)) {
+          state.transactions = state.transactions
+            .map(sanitizeTransaction)
+            .filter(Boolean);
+        }
+        return state;
+      }
+    }
+    return persistedState;
+  },
 }
 ));
