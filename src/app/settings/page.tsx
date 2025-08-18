@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import EWalletConnection from '@/components/ewallet/ewallet-connection';
 
 export default function SettingsPage() {
   return (
@@ -9,6 +10,9 @@ export default function SettingsPage() {
           Manage your account settings and preferences
         </p>
       </div>
+      
+      {/* E-Wallet Integration Section */}
+      <EWalletConnection />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
