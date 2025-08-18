@@ -75,7 +75,6 @@ interface FinanceStore {
   transactions: Transaction[];
   templates: TransactionTemplate[];
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
-  addEWalletTransaction: (transaction: Transaction) => void; // New method for e-wallet imports
   updateTransaction: (id: string, transaction: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;
   addTemplate: (template: Omit<TransactionTemplate, 'id'>) => void;
@@ -88,7 +87,6 @@ interface FinanceStore {
   getTransactionsByCategory: () => Record<string, number>;
   getMonthlyData: () => Array<{ month: string; income: number; expenses: number }>;
   getRecentTransactions: (limit?: number) => Transaction[];
-  getEWalletTransactions: () => Transaction[]; // New method to get e-wallet transactions
 }
 
 // Default templates for common transactions
@@ -158,24 +156,6 @@ export const useFinanceStore = create<FinanceStore>()(
         { ...transaction, id: generateId() },
       ],
     })),
-
-  addEWalletTransaction: (transaction) =>
-    set((state) => {
-      // Check for duplicates based on sourceTransactionId
-      const isDuplicate = state.transactions.some(t => 
-        t.sourceTransactionId === transaction.sourceTransactionId && 
-        t.source === transaction.source
-      );
-      
-      if (isDuplicate) {
-        console.warn('Duplicate e-wallet transaction skipped:', transaction.sourceTransactionId);
-        return state;
-      }
-      
-      return {
-        transactions: [...state.transactions, transaction],
-      };
-    }),
 
   updateTransaction: (id, updatedTransaction) =>
     set((state) => ({
@@ -430,13 +410,6 @@ export const useFinanceStore = create<FinanceStore>()(
       month,
       ...data,
     }));
-  },
-
-  getEWalletTransactions: () => {
-    const { transactions } = get();
-    return transactions.filter(t => 
-      t.source && t.source !== 'manual' && t.source !== 'cash'
-    );
   },
 }),
 {

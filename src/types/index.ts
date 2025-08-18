@@ -13,51 +13,6 @@ export interface Transaction {
   category: string;
   description: string;
   date: Date;
-  source?: 'manual' | 'momo' | 'zalopay' | 'viettelpay' | 'banking' | 'cash';
-  sourceTransactionId?: string;
-  sourceData?: Record<string, unknown>; // Raw data from the source
-  isVerified?: boolean;
-  location?: string;
-  merchant?: string;
-}
-
-// E-wallet integration types
-export interface EWalletConnection {
-  id: string;
-  userId: string;
-  provider: 'momo' | 'zalopay' | 'viettelpay' | 'banking';
-  accountNumber: string;
-  accountName: string;
-  isActive: boolean;
-  lastSyncAt?: Date;
-  accessToken?: string;
-  refreshToken?: string;
-  expiresAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface EWalletTransaction {
-  id: string;
-  transactionId: string;
-  amount: number;
-  type: 'income' | 'expense';
-  description: string;
-  merchant?: string;
-  location?: string;
-  timestamp: Date;
-  status: 'completed' | 'pending' | 'failed';
-  category?: string;
-  rawData: Record<string, unknown>;
-}
-
-export interface SyncResult {
-  success: boolean;
-  transactionsFound: number;
-  transactionsImported: number;
-  duplicatesSkipped: number;
-  errors: string[];
-  lastSyncAt: Date;
 }
 
 export interface Task {
